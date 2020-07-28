@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Angriest__Blobs</title>
+
+    <!-- Import scripts to allow usage of three.js and physi.js functions and variables-->
+    <script type="text/javascript" src="js/three.js"></script>
+    <script type="text/javascript" src="js/physi.js"></script>
+    <!-- External scripts of my own design to be called within the main function -->
+    <link rel="stylesheet" href="styles.css">
+    <script type="text/javascript" src="structureCreation.js"></script>
+    <script type="text/javascript" src="projectile.js"></script>
+    <script type="text/javascript" src="groundPlane.js"></script>
+    <script type="text/javascript" src="projectileControls.js"></script>
+
+</head>
+<body>
+<!-- Points and Power added to screen to show player values gained -->
+<div id="points">Points Added: 0</div>
+<div id="power">Impulse Power:</div>
+
+<!-- The launchPower bar display -->
+<div id="powerDiv">
+    <div id="launchPower"></div>
+</div>
+
+<!-- The text displaying who's go it is per level -->
+<div id="whosGo">
+    <div id="whosTurn"></div>
+</div>
+
+<!-- The Modal used as a popup -->
+<div id="endGame" class="modal">
+    <!-- Modal content, displays total scores gained throughout the game -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <!-- Adds the player points to the modal -->
+        <div id="totalPlayerPoints">Total Player Points: 0</div>
+        <!-- Adds the AI points to the modal -->
+        <div id="totalAIPoints">Total AI Points: 0</div>
+        <!-- Adds the final score to the modal -->
+        <div id="finalScore"></div>
+        <!-- Adds a button to the Modal, to restart the game -->
+        <div id="button">
+            <a href="index.html">
+                <button id="home">Home</button>
+            </a>
+            <button id="reset" onclick="location.reload()">Play again?</button>
+        </div>
+    </div>
+</div>
+<!-- Mute button which allows or disables the music in the window -->
+<button id="mute" onclick="pausePlay()" style="position: fixed; z-index: 100">Mute</button>
+
+<!-- Main Script file which allows for most of the game functionality -->
+<script type="text/javascript">
+
+    //Physjis import statements to allow physics within a scene
+    Physijs.scripts.worker = 'js/physijs_worker.js';
+    Physijs.scripts.ammo = 'ammo.js';
+
+    //Function Callers
+    GroundPlane(); // Calls ground plane function
+    ProjectileShape(); // Calls Projectile shape
+    StructureCreation(); // Calls Structure Creation
+    initScene(); // Calls Init Function
+
+    //Global variables within the script
+    var camera, scene, renderer;
+    var arrow; // Helper to show where the ball is aiming
+    var launched = false; // Boolean to check if the projectile has been launched
+    var force = new THREE.Vector3(-0, 0, 0), launchPower = 0, lift = 0; // Sets the power of the impulse force
+    var launchBar = document.getElementById('launchPower');
+    var playerPoints = 0; // Variable that is used to contain the players points
+    var totalPlayerPoints = 0; // Stores the total amount of points gained by the player through the game
+    var aiPoints = 0; // Variable that is used to contain the AI's points
+    var totalAIPoints = 0; // Stores the total amount of points gained by the AI through the game
+
+    var level = 1;  // Sets the opening level to be 1
+    var isAI = false; // sets the AI to false at the start of the game
+
+    function initScene() {
+        // Sets the scene and gives it properties
+        scene = new Physijs.Scene();
+        scene.setGravity(new THREE.Vector3(0, -9.81, 0)); // Newton's law of physics
+        scene.background = new THREE.TextureLoader().load("texture/background.png"); // Gives the background a texture
+
+        cameras(); // calls the camera function
+        lights(); // calls the lights
+        // adds the ground from the GroundPlane file to the scene
+        var ground = new GroundPlane();
+        scene.add(ground);
+
+        // Renderer which allows the scene to be rendered
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Adds an audio listener which can add music within a scene
+        var listener = new THREE.AudioListener();
+        camera.add(listener);
+        // adds the sound variable to the camera so the music plays at the same volume throughout the scene
+
+        sound = new THREE.Audio(listener); // the sound variable a audio listener
+
+        // These variables load the audio on the screen, while giving it a volume, loop and buffer.
+        var loader = new THREE.AudioLoader();
+        loader.load("music/inGame.wav", function (buffer) { // passes in a music file
+            sound.setBuffer(buffer); // sets a buffer to the music, this is needed, but i don't know why
+            sound.setLoop(true); // loops the music
+            sound.setVolume(0.4); // gives the music a decibel value
+            sound.play(); // plays the music when the game is loaded
+        });
+    }
+
+    // Window event listeners
+    window.addEventListener('resize', onWindowResize, false); // checks for a window resize
+    window.addEventListener('keydown', onkeyDown, false); // checks for a onkeyDown event
+    window.addEventListener('keyup', onkeyup, false); // checks for a onkeyup event
+
+    // This function has all of the camera properties. The camera is Orthographic to give a 2D look
+    function cameras() {
+        var width = window.innerWidth; // variable for window width
+        var height = window.innerHeight; // variable for window height
+        camera = new THREE.OrthographicCamera(width / 40, width / -40, height / 45, height / -45, 0, 50000);
+        // Cameras position in the scene is set here
+        camera.position.x = 0;
+        camera.position.y = 6;
+        camera.position.z = 6;
+    }
+
+    // This function has the light properties to be used within the scene
+    function lights() {
+        var light = new THREE.AmbientLight(0xFFFFCA); // soft yellow light
+        scene.add(light);
+    }
+
+    // This function works with the "Mute" button to pause the music if it is playing,
+    // and restarting the music if it is paused on the button press.
+    function pausePlay() {
+        if (sound.isPlaying) {
+            sound.pause(); // pauses the music
+        } else {
+            sound.play(); // plays the music if the music is paused.#
+        }
+    }
+
+    // This variable allows the access of a function within a different script to be used,
+    // in which a projectile is created and added to the scene
+    var projectile = new ProjectileShape();
+    if (isAI === false && level !== 3) {
+        ProjectileControls(); // Calls Projectile controls if the AI is false
+    }
+    projectile.setLinearFactor(THREE.Vector3(0, 0 ,1)); // prevents motion on the Z axis
+    scene.add(projectile); // Adds projectile to the scene
+    projectile.addEventListener('collision', collision, false); // Listens for a collision event on the projectile
+    projectile.name = "ball"; // names the projectile "ball", which is used in the collision function
+
+    // This variable allows the access of a function within a different script to be used,
+    // within the scene from a different source. This loop works with the StructureCreation function allowing,
+    // the array of structures to be called from the javascript file
+    var structure = new StructureCreation(1);
+    for (var i = 0; i < structure.length; i++) { //Adds the content of the array into the scene
+        structure[i].setLinearFactor(THREE.Vector3(0, 0 , 1)); // prevents motion on the Z axis
+        scene.add(structure [i]);
+        structure[i].userData = {hits: 0}; // Sets the total amount of "hits" to 0 when created.
+        structure[i].addEventListener('collision', collision, false);
+        document.getElementById("whosTurn").innerHTML = "Player's  Turn "; // Starts with the players turn
+        setTimeout(appendTurn, 2000); // The turn text is visible for 2 seconds
+    }
+
+    // This function sets up an event that does something when a key is pressed down.
+    // Within this function a key is selected ("F") which then has certain functions that react,
+    // to the button being held down. Such as adding more force to the X and Y axis for the time,
+    // the (F) key is pressed down for, up to a cap.
+    function onkeyDown(event) {
+        var key = event.which;
+        if (isAI === false) {
+            if (key === 70) { // "F" Key
+                if (launchPower < 1000) {
+                    launchPower += 50; // Adds value to the force power when key held down
+                }
+                if (lift < 35) {
+                    lift += 2; // Adds value to the force power on the y axis
+                }
+                launchBar.style.width = launchPower / 10 + "%"; // adds color to the launchBar based on power
+            }
+        }
+    }
+
+    // This function handel's events which can happen when the "F" key is released from being held down.
+    // The function adds a mass to the projectile, and applies the force that was gained from onkeyDown,
+    // to the projectile in the selected axis direction. It also prevents the ball from being fired,
+    // multiple times after the initial launch.
+    function onkeyup(event) {
+        var key = event.which;
+        if (isAI === false) {
+            if (key === 70) {
+                force.set(-launchPower, lift, 0); // Sets the power of the force
+                projectile.applyTorque(new THREE.Vector3(0, 0, launchPower / 5)); // Gives projectile rotation
+                projectile.mass = 10; // gives projectile a mass allowing it to be fired
+                if (!launched) { // Stops the projectile from being launched after the initial
+                    launched = true;
+                    launchBar.style.width = launchPower / 10 + "%"; // fills the launchBar with color based on the power
+                    projectile.applyCentralImpulse(force.applyMatrix4(projectile.matrix)); // applies power gained from keyDown
+                }
+                window.setTimeout(changeLevel, 10000); // Changes the level after 10 seconds when key is released.
+            }
+        }
+    }
+
+    // This function handel's the information which is included in the modal, that is displayed using a div
+    function popup() {
+        // Get the modal from the div
+        var modal = document.getElementById('endGame');
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+        // Sets the style for the modal as well as displaying the total points for Player and AI
+        modal.style.display = "block";
+        appendTotalPlayerPoints(totalPlayerPoints);
+        appendTotalAIPoints(totalAIPoints);
+        // The below if statements, change the message displayed as the winner depending on the point values
+        if (totalPlayerPoints > totalAIPoints) {
+            appendResults("Player: " + totalPlayerPoints);
+        } else if (totalAIPoints > totalPlayerPoints) {
+            appendResults("Computer: " + totalAIPoints);
+        }
+        if (totalPlayerPoints === totalAIPoints) {
+            appendResults("It's a draw: " + totalAIPoints + "," + totalPlayerPoints);
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
+        };
+    }
+
+    // This functions allows the level (structure) to be changed,
+    // The function calls the structureCreation script to allow it's contents to be used.
+    // The current level that is loaded is played again with the AI, before the next level is called,
+    // as long as the AI is equal to false.
+    function changeLevel() {
+        // This line of code changes if it is the AI's go or not. The code runs like a if statement.
+        // The line basically means, if the AI is equal to false, it is false, otherwise it is true.
+        isAI = (isAI === false);
+
+        // If the AI is found true, say it is the AI's turn and play the previous level again for the AI
+        if (isAI === true) {
+            StructureCreation(level);
+            document.getElementById("whosTurn").innerHTML = "Computer's Turn";
+            setTimeout(appendTurn, 2000);
+            // if the AI is found false, say it is the players turn and set and change the level after the turn ends
+        } else if (isAI === false) {
+            document.getElementById("whosTurn").innerHTML = "Player's  Turn ";
+            setTimeout(appendTurn, 2000);
+
+            if (level <= 2) {
+                level++; // Adds 1 to the level variable, which is used to get different cases to load different levels.
+            } else {
+                resetScene(); // resets the scene at the end of the game
+                popup(); // calls the pop-up at the end of the game
+                return;
+            }
+            if (level === 2){
+                scene.background = new THREE.TextureLoader().load("texture/sunset.png"); // background for level 2
+            } else if (level === 3){
+                scene.background = new THREE.TextureLoader().load("texture/night.png"); // background for level 3
+            }
+        }
+        // The below for loops, remove and add the structures for the level in the order of removing the old,
+        // adding the new.
+        for (var i = 0; i < structure.length; i++) {
+            scene.remove(structure [i]); // Removes the previous structure from the scene
+        }
+        scene.remove(projectile);
+        //Adds the new structure to the scene
+        structure = StructureCreation(level);
+        for (var i = 0; i < structure.length; i++) {
+            scene.add(structure [i]);
+            structure[i].userData = {hits: 0}
+        }
+        // calls the resetScene function after a everything has been used
+        resetScene();
+    }
+
+    // This function re-initialises variables and objects once a level has cleared to allow a new instance,
+    // of those object to be used on a new level, while removing the old variables.
+    function resetScene() {
+        projectile = new ProjectileShape(); // creates new projectile
+        projectile.name = "ball";
+        ProjectileControls(); // adds projectile controls again
+        scene.add(projectile); // adds projectile to scene
+        projectile.addEventListener('collision', collision, false); // Listens for a collision event
+
+        for (var i = 0; i < structure.length; i++) { //Adds the content of the array into the scene
+            structure[i].userData = {hits: 0}; // Sets the total amount of "hits" to 0 when created.
+            structure[i].addEventListener('collision', collision, false);
+        }
+
+        totalPlayerPoints += playerPoints;
+        playerPoints = 0; // sets points for new level to 0
+        appendPoints(playerPoints); // prints points to screen
+        totalAIPoints += aiPoints;
+        aiPoints = 0;
+        appendPoints(aiPoints);
+
+        launchPower = 0; // sets force to 0 so ball wont be fired without a key press
+        launchBar.style.width = launchPower / 100 + "%";
+        launched = false; // sets launched to false so the call can be fired
+
+        // if the AI is found to be true, it is the AI's turn and it's function is called
+        if (isAI === true) {
+            AI();
+        }
+    }
+
+    // This function creates an arrow which is used to help guide the user to where the ball is rotated to.
+    // The arrow is given a colour and a location to aim in (minus X axis).
+    function arrowHelper() {
+        var forward = new THREE.Vector3(-1, 0, 0); // Decides the location the arrow will face
+        var hex = 0x000000; //Adds a color to the helperArrow
+
+        // Adds a helper arrow to show where the projectile is rotated towards
+        var matrix = new THREE.Matrix4(); // Adds Matrix4 to allow for projectile rotation
+        matrix.extractRotation(projectile.matrix); // Extracts the function
+
+        if (!launched) { // Adds the helper arrow to the scene if the ball has not been launched
+            arrow = new THREE.ArrowHelper(forward.applyMatrix4(matrix), projectile.position, 2, hex, 0.5, 1);
+            scene.add(arrow); // adds the helper arrow
+        }
+    }
+
+    // This function checks for collision on an object and adds points per hit to the initial power hit
+    // It uses a variable "hits" along side user data to check how many times the projectile has hit the,
+    // structure. Each block can be hit 3 times by the projectile, and then adds the score (+5) to the score,
+    // up to a total of 3 times. In addition the blocks themselves can give 5 points once when they hit the ground
+    function collision(collided_with) {
+        if (structure.includes(collided_with) && launched && this.name === "ball") { // adds collision detection to structure
+            if (collided_with.userData.hits < 3) { // check to see if projectile has hit less than 5 times
+                collided_with.userData.hits++; // adds 1 to "hits" per hit up to 5
+                if (isAI === true) {
+                    aiPoints += 2;
+                    appendPoints(aiPoints);
+                } else if (isAI === false) {
+                    playerPoints += 2; // gain 2 points per hit per block
+                    appendPoints(playerPoints); // prints points gained to screen
+                }
+            }
+            // This set of If statements, allow the structure blocks to give points to the players,
+            // when they hit the ground. Like above the can only be hit once, to give the points once,
+            // per block hit on the floor.
+        } else if (structure.includes(this) && launched) {
+            if (this.userData.hits <= 2) {
+                this.userData.hits++; // adds 1 to "hits" per hit up to 1
+                if (isAI === true) {
+                    aiPoints += 3;
+                    appendPoints(aiPoints);
+                } else if (isAI === false) {
+                    playerPoints += 3; // gain 3 points per hit per block
+                    appendPoints(playerPoints); // prints points gained to screen
+                }
+            }
+        }
+    }
+
+    // This function handel's all the constraints and variables needed for the AI to function.
+    // It allows an angle and a power to be given to the projectile automatically without user input.
+    function AI() {
+        // Gives the AI some force based between 2 numbers
+        var aiPower = THREE.Math.randInt(350, 1000);
+        // The AI's fire rotation is based on the radius of a circle, the AI is allowed to fire straight forward,
+        // from the projectiles position or rotate the ball up to a maximum of 0.4 of a rad,
+        // (which is the highest point of level 3).
+        // This means the AI can rotate the projectile within these constraints.
+        projectile.rotation.z = THREE.Math.randFloat(-0.4, 0);
+        projectile.__dirtyPosition = true;
+        projectile.__dirtyRotation = true;
+
+        force.set(-aiPower, lift, 0); // Sets the power of the force forward and up
+        appendPoints(aiPoints); // send the points to the appropriate div
+
+        // This function works similar to the players version, as in the ball is given a mass once the boolean,
+        // "launched" is true, along with the power it has been selected.
+        function fire() {
+            launched = true;
+            projectile.mass = 10;
+            launchBar.style.width = aiPower / 10 + "%"; // fills the power bar with the force gained divided by 10
+            projectile.applyCentralImpulse(force.applyMatrix4(projectile.matrix)); // applies power gained from keyDown
+            projectile.applyTorque(new THREE.Vector3(0, 0, aiPower / 5)); // Gives projectile rotation
+
+            setTimeout(changeLevel, 10000); // changes from the AI's turn after 10 seconds of being fired
+        }
+
+        setTimeout(fire, 3000); // sets a delay of 3 seconds before the AI fires the projectile
+    }
+
+    // This function includes functions that need to be added per frame to allow game function
+    animate = function () {
+        requestAnimationFrame(animate); // Allows rotation and Textures to be used
+        scene.simulate(); // Simulates any physics within the scene
+        arrowHelper(); // adds arrow helper
+        renderer.render(scene, camera); // renders the scene and camera
+        scene.remove(arrow); // removes the arrow every frame so only one arrow is visible
+    };
+    animate();
+
+    // Shows who's turn it is to the user
+    function appendTurn() {
+        document.getElementById('whosTurn').innerHTML = " ";
+    }
+
+    // Adds the points gained to the screen
+    function appendPoints(txt) {
+        document.getElementById('points').innerHTML = "Points Added: " + txt;
+    }
+
+    // Adds the total points gained by the player on the end screen
+    function appendTotalPlayerPoints(txt) {
+        document.getElementById('totalPlayerPoints').innerHTML = "Total Player Points: " + txt;
+    }
+
+    // Adds the total points gained by the AI on the end screen
+    function appendTotalAIPoints(txt) {
+        document.getElementById('totalAIPoints').innerHTML = "Total Computer Points: " + txt;
+    }
+
+    // Adds the results of the game to the end screen
+    function appendResults(txt) {
+        document.getElementById('finalScore').innerHTML = "Winner; " + txt;
+    }
+
+    // This function updates the size of the scene and objects depending on the screen size
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+</script>
+</body>
+</html>

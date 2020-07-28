@@ -1,0 +1,244 @@
+<!-- THIS SCRIPT IS FOR THE HOME SCREEN AND IS NOT THE ACTUAL GAME FILE-->
+<!-- THIS SCRIPT IS FOR THE HOME SCREEN AND IS NOT THE ACTUAL GAME FILE-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Angriest__Blobs</title>
+
+    <!-- Import scripts to allow usage of three.js and physi.js functions and variables-->
+    <script type="text/javascript" src="js/three.js"></script>
+    <script type="text/javascript" src="js/physi.js"></script>
+    <!-- External scripts of my own design to be called within the main function -->
+    <link rel="stylesheet" href="homeStyles.css">
+    <script type="text/javascript" src="structureCreation.js"></script>
+    <script type="text/javascript" src="projectile.js"></script>
+    <script type="text/javascript" src="groundPlane.js"></script>
+    <script type="text/javascript" src="projectileControls.js"></script>
+
+</head>
+<body>
+
+<!-- The Modal used as a popup -->
+<div id="endGame" class="modal">
+    <!-- Modal content, displays total scores gained throughout the game -->
+    <div class="modal-content">
+        <div id="button">
+            <a href="angry_blobs.html">
+                <button id="home">Start Game:</button>
+            </a>
+            <header>HOW TO PLAY:</header>
+            <ul>
+                <li> Hold "F" to gain power.</li>
+                <li> Let go to launch the projectile.</li>
+                <li> Click and drag the mouse up and down to aim.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- Mute button which allows or disables the music in the window -->
+<button id="mute" onclick="pausePlay()" style="position: fixed; z-index: 100">Mute</button>
+
+
+<!-- THIS SCRIPT IS FOR THE HOME SCREEN AND IS NOT THE ACTUAL GAME FILE-->
+<script type="text/javascript">
+
+    //Physjis import statements to allow physics within a scene
+    Physijs.scripts.worker = 'js/physijs_worker.js';
+    Physijs.scripts.ammo = 'ammo.js';
+
+    //Function Callers
+    GroundPlane(); // Calls ground plane function
+    ProjectileShape(); // Calls Projectile shape
+    StructureCreation(); // Calls Structure Creation
+    initScene(); // Calls Init Function
+    popup();
+
+    //Global variables within the script
+    var camera, scene, renderer;
+    var arrow; // Helper to show where the ball is aiming
+    var launched = false;
+    var force = new THREE.Vector3(-0, 0, 0);
+    var level = 0;
+    var sound;
+
+    function initScene() {
+        // Sets the scene and gives it properties
+        scene = new Physijs.Scene();
+        scene.setGravity(new THREE.Vector3(0, -9.81, 0)); // Newton's law of physics
+        scene.background = new THREE.TextureLoader().load("texture/background.png"); // Gives the background a texture
+
+        cameras(); // calls the camera function
+        lights(); // calls the lights
+        // adds the ground from the GroundPlane file to the scene
+        var ground = new GroundPlane();
+        scene.add(ground);
+
+        // Renderer which allows the scene to be rendered
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Adds an audio listener which can add music within a scene
+        var listener = new THREE.AudioListener();
+        camera.add(listener);
+        // adds the sound variable to the camera so the music plays at the same volume throughout the scene
+
+        sound = new THREE.Audio(listener); // the sound variable a audio listener
+
+        // These variables load the audio on the screen, while giving it a volume, loop and buffer.
+        var loader = new THREE.AudioLoader();
+        loader.load("music/Start_Screen.wav", function (buffer) { // passes in a music file
+            sound.setBuffer(buffer); // sets a buffer to the music, this is needed, but i don't know why
+            sound.setLoop(true); // loops the music
+            sound.setVolume(0.4); // gives the music a decibel value
+            sound.play(); // plays the music when the game is loaded
+        });
+    }
+
+    // This function works with the "Mute" button to pause the music if it is playing,
+    // and restarting the music if it is paused on the button press.
+    function pausePlay() {
+        if (sound.isPlaying) {
+            sound.pause(); // pause music
+        } else {
+            sound.play(); // play music
+        }
+    }
+
+    // This function handel's the information which is included in the modal, that is displayed using a div
+    function popup() {
+        // Get the modal from the div
+        var modal = document.getElementById('endGame');
+        // Sets the style for the modal as well as displaying the total points for Player and AI
+        modal.style.display = "block";
+    }
+
+    // Window event listeners
+    window.addEventListener('resize', onWindowResize, false); // checks for a window resize
+
+    // This function has all of the camera properties. The camera is Orthographic to give a 2D look
+    function cameras() {
+        var width = window.innerWidth; // variable for window width
+        var height = window.innerHeight; // variable for window height
+        camera = new THREE.OrthographicCamera(width / 40, width / -40, height / 45, height / -45, 0, 50000);
+        // Cameras position in the scene is set here
+        camera.position.x = 0;
+        camera.position.y = 6;
+        camera.position.z = 6;
+    }
+
+    // This function has the light properties to be used within the scene
+    function lights() {
+        var light = new THREE.AmbientLight(0x404040); // soft white light
+        scene.add(light);
+    }
+
+    // This variable allows the access of a function within a different script to be used,
+    // in which a projectile is created and added to the scene
+    var projectile = new ProjectileShape();
+    scene.add(projectile); // Adds projectile to the scene
+
+
+    var structure = new StructureCreation(1);
+    for (var i = 0; i < structure.length; i++) { //Adds the content of the array into the scene
+        scene.add(structure [i]);
+        AI();
+    }
+
+    // This function is mostly the same as the function in the main game file, but it does not play the same level,
+    // twice, only once for the AI.
+    function changeLevel() {
+        if (level < 3) {
+            level++; // Adds 1 to the level variable, which is used to get different cases to load different levels.
+        } else {
+            level = 1;
+        }
+        // The below for loops, remove and add the structures for the level in the order of removing the old,
+        // adding the new.
+        for (var i = 0; i < structure.length; i++) {
+            scene.remove(structure [i]); // Removes the previous structure from the scene
+        }
+        scene.remove(projectile);
+        //Adds the new structure to the scene
+        structure = StructureCreation(level);
+        for (var i = 0; i < structure.length; i++) {
+            scene.add(structure [i]);
+        }
+        // calls the resetScene function after a everything has been used
+        resetScene();
+        // Changes level 7 seconds after the first one
+        setTimeout(changeLevel, 7000);
+    }
+
+    // This function re-initialises variables and objects once a level has cleared to allow a new instance,
+    // of those object to be used on a new level, while removing the old variables.
+    // This is similar to the main function but doesn't need to load as many things
+    function resetScene() {
+        projectile = new ProjectileShape(); // creates new projectile
+        scene.add(projectile); // adds projectile to scene
+
+        for (var i = 0; i < structure.length; i++) { //Adds the content of the array into the scene
+        }
+        launched = false; // sets launched to false so the call can be fired
+        AI();
+    }
+
+    // calls change level
+    changeLevel();
+
+    // This version of the AI has the same properties as the main game, but has new parameter to work for,
+    // the background to make it more exciting.
+    function AI() {
+        // Gives the AI some force based between 2 numbers
+        var aiPower = THREE.Math.randInt(200, 600);
+
+        projectile.rotation.z = THREE.Math.randFloat(-0.2, 0);
+        projectile.__dirtyPosition = true;
+        projectile.__dirtyRotation = true;
+
+        force.set(-aiPower, 0, 0); // Sets the power of the force forward and up
+
+        function fire() {
+            launched = true;
+            projectile.mass = 10;
+            projectile.applyCentralImpulse(force.applyMatrix4(projectile.matrix)); // applies power gained from keyDown
+        }
+
+        setTimeout(fire, 2000);
+    }
+
+    // This function creates an arrow which is used to help guide the user to where the ball is rotated to.
+    // The arrow is given a colour and a location to aim in (minus X axis).
+    function arrowHelper() {
+        var forward = new THREE.Vector3(-1, 0, 0); // Decides the location the arrow will face
+        var hex = 0x000000; //Adds a color to the helperArrow
+        // Adds a helper arrow to show where the projectile is rotated towards
+        var matrix = new THREE.Matrix4(); // Adds Matrix4 to allow for projectile rotation
+        matrix.extractRotation(projectile.matrix); // Extracts the function
+
+        if (!launched) { // Adds the helper arrow to the scene if the ball has not been launched
+            arrow = new THREE.ArrowHelper(forward.applyMatrix4(matrix), projectile.position, 2, hex);
+            scene.add(arrow); // adds the helper arrow
+        }
+    }
+
+    // This function includes functions that need to be added per frame to allow game function
+    animate = function () {
+        requestAnimationFrame(animate); // Allows rotation and Textures to be used
+        scene.simulate(); // Simulates any physics within the scene
+        arrowHelper(); // adds arrow helper
+        renderer.render(scene, camera); // renders the scene and camera
+        scene.remove(arrow); // removes the arrow every frame so only one arrow is visible
+    };
+    animate();
+
+    // This function updates the size of the scene and objects depending on the screen size
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+</script>
+</body>
+</html>

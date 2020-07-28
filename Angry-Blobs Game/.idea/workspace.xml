@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="e0f798bf-2954-4951-a184-004940693fb9" name="Default Changelist" comment="" />
+    <ignored path="$PROJECT_DIR$/.tmp/" />
+    <ignored path="$PROJECT_DIR$/temp/" />
+    <ignored path="$PROJECT_DIR$/tmp/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="138">
+              <caret line="6" selection-start-line="6" selection-end-line="6" />
+              <folding>
+                <element signature="n#div#0;n#body#0;n#html#0;n#!!top" />
+                <element signature="n#style#0;n#button#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/homeStyles.css">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/angry_blobs.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1189">
+              <caret line="55" column="31" selection-start-line="55" selection-start-column="31" selection-end-line="55" selection-end-column="31" />
+              <folding>
+                <element signature="e#1267#1274#1" expanded="true" />
+                <element signature="n#style#0;n#button#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+                <element signature="e#11797#13939#0" />
+                <element signature="e#14159#15405#0" />
+                <element signature="e#15618#16302#0" />
+                <element signature="e#18447#20042#0" />
+                <element signature="e#21354#21437#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/styles.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="598">
+              <caret line="26" selection-start-line="26" selection-end-line="26" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/projectileControls.js">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/projectile.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret column="38" selection-start-column="38" selection-end-column="38" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/groundPlane.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <caret column="68" selection-start-column="68" selection-end-column="68" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/structureCreation.js">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+        <option value="HTML File" />
+        <option value="CSS File" />
+      </list>
+    </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>camera</find>
+      <find>Geometry</find>
+      <find>THREE</find>
+      <find>BoxMesh</find>
+      <find>fired</find>
+    </findStrings>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/Index_test.html" />
+        <option value="$PROJECT_DIR$/js/DragControls.js" />
+        <option value="$PROJECT_DIR$/js/physi.js" />
+        <option value="$PROJECT_DIR$/js/ammo.js" />
+        <option value="$PROJECT_DIR$/test.html" />
+        <option value="$PROJECT_DIR$/js/OrbitControls.js" />
+        <option value="$PROJECT_DIR$/test.js" />
+        <option value="$PROJECT_DIR$/js/Cloth.js" />
+        <option value="$PROJECT_DIR$/launcher.js" />
+        <option value="$PROJECT_DIR$/coinCreator.js" />
+        <option value="$PROJECT_DIR$/endGame.html" />
+        <option value="M:/../Year 1/Semester_2/cs15020/index.html" />
+        <option value="M:/../Year 1/Semester_2/cs15020/stylesheet.css" />
+        <option value="$PROJECT_DIR$/projectileControls.js" />
+        <option value="$PROJECT_DIR$/homeStyles.css" />
+        <option value="$PROJECT_DIR$/Index.html" />
+        <option value="$PROJECT_DIR$/structureCreation.js" />
+        <option value="$PROJECT_DIR$/styles.css" />
+        <option value="$PROJECT_DIR$/groundPlane.js" />
+        <option value="$PROJECT_DIR$/projectile.js" />
+        <option value="$PROJECT_DIR$/angry_blobs.html" />
+      </list>
+    </option>
+  </component>
+  <component name="JsFlowSettings">
+    <service-enabled>true</service-enabled>
+    <exe-path />
+    <other-services-enabled>true</other-services-enabled>
+    <auto-save>true</auto-save>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1296" />
+    <option name="height" value="696" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="CS32420_Assignment" type="b2602c69:ProjectViewProjectNode" />
+              <item name="CS32420_Assignment" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="CS32420_Assignment" type="b2602c69:ProjectViewProjectNode" />
+              <item name="CS32420_Assignment" type="462c0819:PsiDirectoryNode" />
+              <item name="texture" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DefaultHtmlFileTemplate" value="HTML File" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="list.type.of.created.stylesheet" value="CSS" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="JavaScript.Libraries" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration name="angry_blobs.html" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/Assignment Code/angry_blobs.html">
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JavaScript Debug.angry_blobs.html" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e0f798bf-2954-4951-a184-004940693fb9" name="Default Changelist" comment="" />
+      <created>1539685910747</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1539685910747</updated>
+      <workItem from="1539685912200" duration="11227000" />
+      <workItem from="1539714723917" duration="406000" />
+      <workItem from="1539780216717" duration="9742000" />
+      <workItem from="1539792392399" duration="2333000" />
+      <workItem from="1539873350023" duration="3257000" />
+      <workItem from="1539957201168" duration="7747000" />
+      <workItem from="1539977914229" duration="2853000" />
+      <workItem from="1540116803060" duration="22159000" />
+      <workItem from="1540226432531" duration="502000" />
+      <workItem from="1540286362621" duration="16292000" />
+      <workItem from="1540313537118" duration="336000" />
+      <workItem from="1540382634674" duration="15420000" />
+      <workItem from="1540461739234" duration="2129000" />
+      <workItem from="1540473303720" duration="8178000" />
+      <workItem from="1540560977727" duration="10899000" />
+      <workItem from="1540640417321" duration="2329000" />
+      <workItem from="1540747119773" duration="3972000" />
+      <workItem from="1540810849599" duration="4992000" />
+      <workItem from="1540900332111" duration="13379000" />
+      <workItem from="1540920199341" duration="1547000" />
+      <workItem from="1540991736875" duration="15657000" />
+      <workItem from="1541064659788" duration="4216000" />
+      <workItem from="1541079775738" duration="279000" />
+      <workItem from="1541080075844" duration="2847000" />
+      <workItem from="1541082986193" duration="7382000" />
+      <workItem from="1541167410691" duration="18261000" />
+      <workItem from="1541239348131" duration="31335000" />
+      <workItem from="1541283333963" duration="91000" />
+      <workItem from="1541341737406" duration="7554000" />
+      <workItem from="1541416593758" duration="2163000" />
+      <workItem from="1541509289730" duration="3794000" />
+      <workItem from="1541530214306" duration="2750000" />
+      <workItem from="1541533012858" duration="5835000" />
+      <workItem from="1541583846545" duration="2748000" />
+      <workItem from="1541586796725" duration="133000" />
+      <workItem from="1541694477871" duration="831000" />
+      <workItem from="1541944053854" duration="743000" />
+      <workItem from="1551538124239" duration="268000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="246614000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1296" height="696" extended-state="6" />
+    <editor active="true" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.16216215" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.023154847" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Terminal" order="9" />
+      <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" weight="0.3299566" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/background.jpg" />
+    <entry file="file://$PROJECT_DIR$/Index_test.html" />
+    <entry file="file://$PROJECT_DIR$/texture/background.jpg" />
+    <entry file="file://$PROJECT_DIR$/js/three.min.js">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/physi/physi.js" />
+    <entry file="file://$PROJECT_DIR$/physics_test.html" />
+    <entry file="file://$PROJECT_DIR$/test.html" />
+    <entry file="file://$PROJECT_DIR$/js/OrbitControls.js" />
+    <entry file="file://$PROJECT_DIR$/js/physijs_worker.js">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/DragControls.js" />
+    <entry file="file://$PROJECT_DIR$/js/three.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="16556">
+          <caret line="5013" column="40" selection-start-line="5013" selection-start-column="32" selection-end-line="5013" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/physi.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="23207">
+          <caret line="1138" lean-forward="true" selection-start-line="1138" selection-end-line="1138" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/js/Cloth.js" />
+    <entry file="file://$PROJECT_DIR$/launcher.js" />
+    <entry file="file://$PROJECT_DIR$/js/ammo.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="579">
+          <caret line="88863" column="24" selection-end-line="89104" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Downloads/GameTestingV0.02/gameCodeTestV01.js" />
+    <entry file="file://$PROJECT_DIR$/coinCreator.js" />
+    <entry file="file://$PROJECT_DIR$/endGame.html" />
+    <entry file="file://M:/../Year 2/Semester_1/Programming for the Web/Assignment/characterScript.js" />
+    <entry file="file://M:/../Year 2/Semester_1/Programming for the Web/Assignment/index.html" />
+    <entry file="file://M:/../Year 1/Semester_2/cs15020/stylesheet.css" />
+    <entry file="file://M:/../Year 1/Semester_2/cs15020/index.html" />
+    <entry file="file://M:/../Year 2/Semester_1/Programming for the Web/Assignment/styles.css" />
+    <entry file="file://M:/../Year 2/Semester_1/Programming for the Web/Assignment/About.html" />
+    <entry file="file://$USER_HOME$/Downloads/Prac3-TheOrrery-Solution/index.html" />
+    <entry file="file://$USER_HOME$/Downloads/Field-Fun-V2/Field Fun/gameCodeTestV01.js" />
+    <entry file="file://$PROJECT_DIR$/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="138">
+          <caret line="6" selection-start-line="6" selection-end-line="6" />
+          <folding>
+            <element signature="n#div#0;n#body#0;n#html#0;n#!!top" />
+            <element signature="n#style#0;n#button#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/homeStyles.css">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/styles.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="598">
+          <caret line="26" selection-start-line="26" selection-end-line="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/projectileControls.js">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/projectile.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="38" selection-start-column="38" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/groundPlane.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="68" selection-start-column="68" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/structureCreation.js">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/angry_blobs.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1189">
+          <caret line="55" column="31" selection-start-line="55" selection-start-column="31" selection-end-line="55" selection-end-column="31" />
+          <folding>
+            <element signature="e#1267#1274#1" expanded="true" />
+            <element signature="n#style#0;n#button#0;n#body#0;n#html#0;n#!!top" expanded="true" />
+            <element signature="e#11797#13939#0" />
+            <element signature="e#14159#15405#0" />
+            <element signature="e#15618#16302#0" />
+            <element signature="e#18447#20042#0" />
+            <element signature="e#21354#21437#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
