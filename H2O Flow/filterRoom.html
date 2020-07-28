@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Filter Room </title>
+    <!-- Import scripts to allow usage of three.js and physi.js functions and variables-->
+    <script type="text/javascript" src="js/three.js"></script>
+
+    <!-- Import scripts of my own design to allow for cross script functions-->
+    <link rel="stylesheet" href="styleSheets/filterStyles.css">
+    <script type="text/javascript" src="gameScripts/lakeWater.js"></script>
+    <script type="text/javascript" src="gameScripts/filters.js"></script>
+    <script type="text/javascript" src="gameScripts/filterPipes.js"></script>
+    <script type="text/javascript" src="gameScripts/points.js"></script>
+    <script type="text/javascript" src="gameScripts/timer.js"></script>
+    <script type="text/javascript" src="gameScripts/newPlayer.js"></script>
+
+</head>
+<body>
+
+<div id="weatherSun">
+    <img src="texture/weatherSun.png" alt="invalid" style="width:15vw; height: 5vw">
+</div>
+
+<div id="weatherRain">
+    <img src="texture/weatherRain.png" alt="invalid" style="width:15vw; height: 5vw">
+</div>
+
+<div id="Timer"> Time Left:
+    <label id="minutes">00</label>:<label id="seconds">00</label>
+</div>
+
+<!-- Prints values to the screen. (id represents the value printed)-->
+<div id="flow">Flow Rate: 0 litres</div>
+<div id="capacity"></div>
+<div id="points"></div>
+<div id="filterTurbidity"></div>
+<div id="flocculantLevel"></div>
+
+<button id="addFloc" onclick="addFloc()" style="position: fixed; z-index: 100"></button>
+<button id="removeFloc" onclick="removeFloc()" style="position: fixed; z-index: 100"></button>
+
+<div id="filterLoad"></div>
+<button id="cleanFilter" onclick="cleanFilter()" style="position: fixed; z-index: 100">Clean</button>
+<div id="filterCleaned"></div>
+
+<div id="waterQuality"></div>
+<div id="tank">Holding Tank</div>
+
+<a href="index.html">
+    <button id="exitGame" onclick="resetVariables()"> Exit Game</button>
+</a>
+
+<!-- Buy water button -->
+<button id="buyWaterButton" onclick="buyWater()">Buy Water: £50</button>
+
+<!-- div for displaying the in-game tips. -->
+<div id="tips">
+    <h1>Game Tips:</h1>
+    <p>Tip: Add Flocculant to make the Water Quality good.</p>
+    <p>Tip: Keep track of the Water Quality and Flow Rate.</p>
+    <p>Tip: Keep your filter clean to maintain a good flow rate.</p>
+    <p>Tip: Don't run out of water in your tank.</p>
+</div>
+
+<!-- pop-up for the end game when the timer runs out -->
+<div id="endGame" class="modal">
+    <div class="modal-content">
+        <div id="endGameHeader">Times Up!</div>
+        <div id="playerScore">Your Score:</div>
+        <button id="enterName" onclick="addHighScore()">Save Score</button>
+        <a href="index.html">
+            <button id="exit" onclick="resetVariables()">Exit:</button>
+        </a>
+        <a href="filterRoom.html">
+            <button id="newGame" onclick="newGame()">Play Again?</button>
+        </a>
+    </div>
+</div>
+
+<!-- pop-up for the game over screen when the player runs out of water -->
+<div id="gameOver" class="modal">
+    <div class="modal-content">
+        <div id="gameOverHeader">Game Over!</div>
+        <p>.</p>
+        <p> Water in tank ran out!</p>
+        <p> Tip: Try to make as much water as you can before the time runs out.</p>
+        <a href="index.html">
+            <button id="exit" onclick="resetVariables()">Exit:</button>
+        </a>
+        <a href="filterRoom.html">
+            <button id="tryAgain" onclick="newGame()">Try Again?</button>
+        </a>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    // CLEARS THE CONSOLE LOG AT THE START OF THE GAME
+    console.clear();
+
+    /*
+    * INTERNAL AND EXTERNAL FUNCTION CALLERS
+    */
+    initScene();
+    gameTimers();
+    initalizeCapacity();
+    lakeWater(); // External function caller
+    animatedTextureLoader();
+
+    /*
+     * GLOBAL VARIABLES
+     */
+    var camera, scene, renderer; // variables for setting up the scene.
+    var waterFlow, season; // initial waterFlow and season.
+    var waterQuality = true; // Initial waterQuality Boolean.
+    var capacityTimer, userPoints, filterTimer, seasonTurb; // Timers that effect the game play.
+    // Textures, that need to be initialised globally to allow for animation.
+    var waterPipeTexture, cleanWaterHTexture, wasteWaterPipeTexture, wasteWaterTexture, cleanWaterTexture,
+        cleanWaterTextureD, lakePipeTexture, lakePipeTextureV, valveTextureBad, valveTextureGood;
+    var offsetX, offsetY; // The variable which is used to work out how much the texture will move by.
+
+    /*
+    * TIMER LABELS
+    */
+    var minutesLabel = document.getElementById("minutes");
+    var secondsLabel = document.getElementById("seconds");
+
+    /*
+    * EVENT LISTENERS
+    */
+    window.addEventListener('resize', onWindowResize, false);
+
+    /*
+      * CREATES: FILTER FOR COLOUR CHANGES
+      * CONSTRAINT: Must be initialised globally to allow for full usage.
+      * CONSTRAINT: Need to be positioned before the "colorChange" Function to allow the function to work.
+      */
+    var boxGeometry = new THREE.ConeGeometry(5, 10, 22);
+    var F1Material = new THREE.MeshBasicMaterial({color: 0x9CFF77});
+    var foregroundFilter = new THREE.Mesh(boxGeometry, F1Material, 5);
+    foregroundFilter.position.x = (24);
+    foregroundFilter.position.y = (5);
+    foregroundFilter.position.z = (0);
+    foregroundFilter.rotation.z = 3.14;
+    scene.add(foregroundFilter);
+
+
+    /* initScene:
+     *
+     * Initializes: Texture animation offset, season, waterFlow, physics scene, camera, lighting, rendered.
+     *
+     * The purpose of this function is to set up the variables that need to be initialised before usage within the game.
+     */
+    function initScene() {
+        offsetX = 0; // The amount of pixels the textures are animated by on the X plane.
+        offsetY = 0;  // The amount of pixels the textures are animated by on the Y plane.
+        season = 1; // Starts the game in the "Sunny" season.
+        waterFlow = 10; // Initial water flow for the game.
+        appendQuality(); // Calls the initial water quality text.
+
+        scene = new THREE.Scene(); // Physics scene that allows physics simulation.
+        scene.background = new THREE.TextureLoader().load("texture/filterRoom.png"); // The scene's background art.
+
+        var width = 1920; // variable for window width
+        var height = 940; // variable for window height
+
+        camera = new THREE.OrthographicCamera(width / 40, width / -40, height / 45, height / -45, 0, 20000);
+        // sets the cameras position in the scene.
+        camera.position.x = 0;
+        camera.position.y = 5;
+        camera.position.z = 6;
+
+        var light = new THREE.AmbientLight(0x404040); // soft white light
+        scene.add(light);
+
+        // renders the 3D objects and simulations into the scene.
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        document.getElementById("weatherSun").style.visibility = "visible"; // shows "sunny" weather graphic.
+    }
+
+    /* gameTimers:
+     *
+     * Initializes: Timers for, lake capacity, userPoints, filterLoadTimer, turbRadomiser.
+     *
+     * This function starts the relevant timers within the game to allow for further functionality.
+     */
+    function gameTimers() {
+        capacityTimer = setInterval(tankTimer, 1500); // tank value goes down every 1.5 seconds.
+        userPoints = setInterval(points, 2000); // userPoints go down every 2.0 seconds.
+        filterTimer = setInterval(filterLoadTimer, 2000); // filter fills up every 2.0 seconds.
+        seasonTurb = setInterval(randomiseTurb, 6000); // weather season changes every 6.0 seconds.
+    }
+
+    /* initalizeCapacity:
+     *
+     * CHECKS: If the capacity for the lake has been set or not.
+     *
+     * This function sets the capacity value to true at the start of the game.
+     * PURPOSE: Prevent the capacity from resetting on refresh or scene switch.
+     *
+     * RETURNS: TRUE when called for the first time.
+     */
+    function initalizeCapacity() {
+        if (sessionStorage.getItem('isInitialized') !== "true") { // checks if the isInitialized variable is not true.
+            var tankCapacity = 100; // initial tank value
+            sessionStorage.setItem('Capacity', tankCapacity);
+            sessionStorage.setItem('isInitialized', "true"); // sets the variable to true if it is false.
+        }
+    }
+
+    /* adding Filters
+     *
+     * INITIALIZES: The contents of the filters array from the Filters file.
+     *
+     * This function loads in the contents of the filters array from an external file and adds them to the scene.
+     * The for loop also adds the relevant text to the screen regarding userData of the objects.
+     */
+    var filters = new Filters();
+    for (var i = 0; i < filters.length; i++) {
+        scene.add(filters[i]); // adds the array contents to the scene.
+        appendFilterLoad(filters[0].userData.filterLoad);
+        appendFloc(filters[0].userData.Flocculant);
+    }
+
+    /* adding Pipes
+         *
+         * INITIALIZES: The contents of the pipes array from the Pipes file.
+         *
+         * This function loads in the pipes from the another file and adds them to the scene.
+         */
+    var pipes = new Pipes();
+    for (var i = 0; i < pipes.length; i++) {
+        scene.add(pipes[i]);
+    }
+
+    /* adding holding Tank
+     *
+     * INITIALIZES: The third object in the lakeWater array.
+     *
+     * This loop loads the third object in the lakeWater array into this scene (holding tank).
+     */
+    var tank = new lakeWater();
+    for (var i = 0; i < tank.length; i++) {
+        scene.add(tank[2]);
+        scene.add(tank[3]);
+    }
+
+    /*
+     * Seasons:
+     *
+     * PURPOSE: Changes between seasons to add more complexity to the game play.
+     * Additionally, shows a graphic which alerts to the user what the weather is.
+     *
+     * This function changes the season from "Sun" to "rain" every 15 seconds of play time.
+     *
+    */
+    function seasons() {
+        if (season === 1) {
+            document.getElementById("weatherRain").style.visibility = "visible";
+            document.getElementById("weatherSun").style.visibility = "hidden";
+            season = 2;
+        }
+        else if (season === 2) {
+            document.getElementById("weatherRain").style.visibility = "hidden";
+            document.getElementById("weatherSun").style.visibility = "visible";
+            season = 1;
+        }
+        setTimeout(seasons, 15000);
+    }
+
+    setTimeout(seasons, 15000); // sets the season to change every 2 minutes
+
+    /*
+    * randomiseTurb:
+    *
+    * GETS: 'Turbidity' value, 'season' variable.
+    *
+    * PURPOSE: This function changes the Turbidity value based on the season.
+    * The function randomises the value between 1 and 5, and then adds a random value between 1 and 3 for "Sunny",
+    * and between 2 and 5 for "Raining".
+    *
+    * CONSTRAINTS: Limits the Flocculant to 1 when the value goes below 1.
+    *
+    */
+    function randomiseTurb() {
+        appendTurbidity(sessionStorage.getItem('Turbidity'));
+        sessionStorage.setItem('Turbidity', THREE.Math.randInt(2, 5));
+        console.clear();
+        if (season === 1) {
+            sessionStorage.setItem('Turbidity', parseInt(window.sessionStorage.getItem('Turbidity')) + THREE.Math.randInt(1, 3));
+        }
+        if (season === 2) {
+            sessionStorage.setItem('Turbidity', parseInt(window.sessionStorage.getItem('Turbidity')) + THREE.Math.randInt(2, 5));
+        }
+        if (filters[0].userData.Flocculant <= 1) {
+            filters[0].userData.Flocculant = 1;
+        }
+        console.log(sessionStorage.getItem('Turbidity'));
+    }
+
+    /*
+    * filterLoadTimer:
+    *
+    * This function calculates how much the filter percentage will increase by, depending on the amount of,
+    * flocculant within the water.
+    * Additionally, this function will start reducing the water flow, when the filter percentage goes above 60%.
+    *
+    * PURPOSE: Teaches the user that the more flocculant added, the dirtier the filter will become.
+    */
+    function filterLoadTimer() {
+        if (filters[0].userData.filterLoad <= 100) {
+            // adds the flocculant value to the filterLoad.
+            filters[0].userData.filterLoad += filters[0].userData.Flocculant;
+        } else if (filters[0].userData.filterLoad >= 100) {
+            filters[0].userData.filterLoad = 100; // constraints the filterLoad to 100%.
+        }
+        if (filters[0].userData.filterLoad >= 60) { // reduces the water flow when the filter is 60% and above full.
+            waterFlow -= 1;
+        }
+    }
+
+    /*
+     * changeColor:
+     *
+     * PURPOSE: Change the colour of the filter to visualise the filter getting dirty.
+     *
+     * This function uses the data assigned to the filters[0] object, to help calculate when,
+     * the colour of the foregroundFilter will change.
+     *
+     * The foregroundFilter refers to the object created within this file, whereas the filters[0],
+     * is created in the external "filters" file.
+     *
+    */
+    function changeColor() {
+        // checks background filters "filterLoad" data.
+        if (filters[0].userData.filterLoad >= 20 && filters[0].userData.filterLoad < 30) {
+            foregroundFilter.material.color.setHex(0xFFF777); // changes foreground filer color.
+        }
+        if (filters[0].userData.filterLoad >= 30 && filters[0].userData.filterLoad < 50) {
+            foregroundFilter.material.color.setHex(0xFFDE64); // changes foreground filer color.
+        } else if (filters[0].userData.filterLoad >= 50 && filters[0].userData.filterLoad < 70) {
+            foregroundFilter.material.color.setHex(0xFFC264); // changes foreground filer color.
+        }
+        if (filters[0].userData.filterLoad >= 70 && filters[0].userData.filterLoad < 90) {
+            foregroundFilter.material.color.setHex(0xF38755); // changes foreground filer color.
+        } else if (filters[0].userData.filterLoad >= 90 && filters[0].userData.filterLoad < 100) {
+            foregroundFilter.material.color.setHex(0xF36655); // changes foreground filer color.
+        }
+        if (filters[0].userData.filterLoad === 100) {
+            foregroundFilter.material.color.setHex(0xD23838); // changes foreground filer color.
+        }
+    }
+
+    /**
+     * This function "cleans the filter" by getting the relevant userData and setting to it's original value.
+     *
+     * PURPOSE: Resets the filters[0] properties to their original value to simulate the filter being cleaned.
+     * The values that are reset are, filterLoad, Flocculant and waterFlow.
+     * DISPLAYS: Text on the screen to visualise what the function has done. (This text is removed after 4 seconds).
+     * REMOVES: This function removes "10" from the points and capacity each time it is called.
+     */
+    function cleanFilter() {
+        foregroundFilter.material.color.setHex(0x9CFF77); // changes material color
+        filters[0].userData.filterLoad = 0; // resets the filterLoad
+        filters[0].userData.Flocculant = 1; // resets Flocculant level.
+        // reduces the capacity and points variables by 10 when the function is called
+        window.sessionStorage.setItem('points', parseInt(window.sessionStorage.getItem('points')) - 10);
+        window.sessionStorage.setItem('Capacity', parseInt(window.sessionStorage.getItem('Capacity')) - 10);
+        waterFlow = 10; // resets the waterFlow.
+        tank[3].scale.y -= (0.10);
+        appendPointsLost();
+
+        // removes the respective text after a certain time when the function is called
+        var removeText = function () {
+            document.getElementById("filterCleaned").style.display = "none";
+        };
+        setTimeout(removeText, 4000);
+        document.getElementById("filterCleaned").style.display = "block";
+    }
+
+    /*
+     * This functions adds 1 value to the Flocculant and removes 1 from the Turbidity.
+     *
+     * CONSTRAINT: This function is only functions when the Flocculant userData is below 10,
+     * and the Turbidity is above 0. This is to constraint the function into having logical effects.
+     * It is advised to have these constraints to prevent, unusual game play features.
+     */
+    function addFloc() {
+        if (filters[0].userData.Flocculant < 10) {
+            filters[0].userData.Flocculant += 1; // adds "1" to the value when called.
+
+            if (sessionStorage.getItem('Turbidity') > 0) {
+                sessionStorage.setItem('Turbidity', sessionStorage.getItem('Turbidity') - 1); // removes "1" turbidity.
+            }
+        }
+    }
+
+    /*
+     * This functions removes 1 value to the Flocculant and adds 1 to the Turbidity.
+     *
+     * CONSTRAINT: This function is only functions when the Flocculant userData is below or equal to 10 and above 0.
+     * The Turbidity must be below 10. This is to constraint the function into having logical effects.
+     * It is advised to have these constraints to prevent, unusual game play features.
+     */
+    function removeFloc() {
+        if (filters[0].userData.Flocculant <= 10 && filters[0].userData.Flocculant > 0) {
+            filters[0].userData.Flocculant -= 1; // removes "1" from Flocculant.
+        }
+        if (sessionStorage.getItem('Turbidity') < 10) {
+            sessionStorage.setItem('Turbidity', parseInt(sessionStorage.getItem('Turbidity')) + 1); // adds "1".
+        }
+    }
+
+    /*
+    * disableRemoveFloc:
+    *
+    * This function prevents the use of the "removeFloc" button when the value is the lowest it is allowed to be.
+    *
+    * CONSTRAINT: Disables the button if the flocculant is equal to 1.
+    *
+    * Purpose: Prevents unwanted game play features
+    */
+    function disableRemoveFloc() {
+        if (filters[0].userData.Flocculant === 1) {
+            document.getElementById('removeFloc').disabled = true;
+        } else if (filters[0].userData.Flocculant > 1) {
+            document.getElementById('removeFloc').disabled = false;
+        }
+    }
+
+    /*
+        * checkQuality:
+        *
+        * This function determines the quality of the water, based on parameters that need to be met.
+        * Decides if the water quality is "Good" or "Bad" depending on the Turbidity value.
+        * Can be easily altered to handle more parameters, by adding more checks into the "if statements".
+        *
+        * PURPOSE: Makes the indication of water quality easy for the user.
+ */
+    function checkQuality() {
+        if (sessionStorage.getItem('Turbidity') >= 6) {
+            waterQuality = false;
+        } else if (sessionStorage.getItem('Turbidity') <= 5) {
+            waterQuality = true;
+        }
+    }
+
+    /*
+  * PURPOSE: Allows the user to increase tank capacity to prevent losing the game.
+  *
+  * This function removes "50" from the points variable and adds "50" to the tank capacity.
+  * In addition, this function re-scales the tank water to the original size, to visualise a "re-fill"
+  *
+  * CONSTRAINT: This function can only be used when the capacity variable has a value below or equal to 50.
+  * This prevents unnecessary game play mechanics.
+  *
+ */
+    function buyWater() {
+        if (window.sessionStorage.getItem('Capacity') <= 50) { // checks to see the value of capacity variable
+            // Adds 50 to the capacity value and removes 50 from the points variable
+            window.sessionStorage.setItem('points', parseInt(window.sessionStorage.getItem('points')) - 50);
+            window.sessionStorage.setItem('Capacity', parseInt(window.sessionStorage.getItem('Capacity')) + 50);
+            tank[3].scale.y = (1);
+        }
+    }
+
+    // ALLOWS THE DISPLAY OF TEXT TO THE SCREEN FROM VARIOUS SOURCES
+    function appendFilterLoad(txt) {
+        document.getElementById('filterLoad').innerHTML = "Filter Load: " + txt + "%";
+    }
+
+    function appendFloc(txt) {
+        document.getElementById('flocculantLevel').innerHTML = "Flocculant Level: " + txt;
+    }
+
+    function appendTurbidity(txt) {
+        document.getElementById('filterTurbidity').innerHTML = "Water Turbidity: " + txt;
+    }
+
+    function appendFlow(txt) {
+        document.getElementById('flow').innerHTML = "Flow Rate: " + txt + " litres";
+    }
+
+    function appendPointsLost() {
+        document.getElementById('filterCleaned').innerHTML = "-10 " + "points and capacity";
+    }
+
+    function appendPoints(txt) {
+        document.getElementById('points').innerHTML = "Points: " + txt;
+    }
+
+    function appendCapacity(txt) {
+        document.getElementById('capacity').innerHTML = "Tank Capacity: " + txt + " Litres";
+    }
+
+    function appendPlayerResults(txt) {
+        document.getElementById('playerScore').innerHTML = "Your Score: " + txt;
+    }
+
+    // Changes the text displayed for "waterQuality" depending on the water quality
+    function appendQuality() {
+        if (waterQuality === false) {
+            document.getElementById('waterQuality').innerHTML = "Water Quality: Bad";
+        } else if (waterQuality === true) {
+            document.getElementById('waterQuality').innerHTML = "Water Quality: Good";
+        }
+    }
+
+    /*
+       * animatedTextureLoader:
+       *
+       * This function loads in textures to be used for animation.
+       * Additionally, allows the textures to be mirrored when actions are preformed.
+       *
+       * PURPOSE: Visual aid of water being moved to the holding tank.
+       */
+    function animatedTextureLoader() {
+        // Pipe going from the filter to the valve. (CLEAN WATER).
+        waterPipeTexture = new THREE.TextureLoader().load('waterTexture/waterPipeH.png');
+        waterPipeTexture.wrapS = THREE.MirroredRepeatWrapping;
+        // Pipe going from the filter to the valve. (WASTE WATER).
+        wasteWaterPipeTexture = new THREE.TextureLoader().load('waterTexture/wasteWaterPipeH.png');
+        wasteWaterPipeTexture.wrapS = THREE.MirroredRepeatWrapping;
+        // Pipe going down from the transmission box. (WASTE).
+        wasteWaterTexture = new THREE.TextureLoader().load('waterTexture/wasteWaterPipe.png');
+        wasteWaterTexture.wrapT = THREE.MirroredRepeatWrapping;
+        // Pipe going up from the transmission box to the tank. (CLEAN).
+        cleanWaterTexture = new THREE.TextureLoader().load('waterTexture/cleanWaterPipe.png');
+        cleanWaterTexture.wrapT = THREE.MirroredRepeatWrapping;
+        // Pipe going horizontal from the clean water. (CLEAN).
+        cleanWaterHTexture = new THREE.TextureLoader().load('waterTexture/cleanWaterH.png');
+        cleanWaterHTexture.wrapS = THREE.MirroredRepeatWrapping;
+        // Pipe going down into the holding tank. (CLEAN).
+        cleanWaterTextureD = new THREE.TextureLoader().load('waterTexture/cleanWaterPipeD.png');
+        cleanWaterTextureD.wrapT = THREE.MirroredRepeatWrapping;
+        // Pipe from the lake scene.
+        lakePipeTexture = new THREE.TextureLoader().load('waterTexture/lakePipe.png');
+        lakePipeTexture.wrapS = THREE.MirroredRepeatWrapping;
+        // Pipe down to the filter
+        lakePipeTextureV = new THREE.TextureLoader().load('waterTexture/lakePipeV.png');
+        lakePipeTextureV.wrapT = THREE.MirroredRepeatWrapping;
+        // texture for the valve when the water is bad.
+        valveTextureBad = new THREE.TextureLoader().load('waterTexture/valveBad.png');
+        // texture for the valve when the water is good.
+        valveTextureGood = new THREE.TextureLoader().load('waterTexture/valveGood.png');
+    }
+
+    /*
+     * textureAnimation:
+     *
+     * This function moves the texture in the positions that are specified.
+     *
+     * PURPOSE: To show the water flowing in the correct direction to their respective sources.
+     */
+    function textureAnimation() {
+        var offsety = offsetY + 0.005;
+        var offsetx = offsetX + 0.003;
+
+        // TEXTURE FOR LAKE PIPE HORIZONTAL
+        lakePipeTexture.offset.set(-offsetx, 0);
+        pipes[5].material.map = lakePipeTexture;
+        pipes[5].material.needsUpdate = true;
+        // TEXTURE FOR LAKE PIPE VERTICAL
+        lakePipeTextureV.offset.set(0, offsety);
+        pipes[6].material.map = lakePipeTextureV;
+        pipes[6].material.needsUpdate = true;
+
+        // MOVES THE PIPE TEXTURES WHEN THE WATER NEEDS TO BE SENT TO WASTE.
+        if (waterQuality === false) {
+            offsetX = offsetx;
+            offsetY = offsety;
+            // Pipe going from the filter to the valve. (WASTE WATER).
+            wasteWaterPipeTexture.offset.set(-offsetx, 0); // Horizontal right
+            pipes[0].material.map = wasteWaterPipeTexture;
+            pipes[0].material.needsUpdate = true;
+            // Pipe going down from the transmission box. (WASTE).
+            wasteWaterTexture.offset.set(0, offsety); // Vertical Down
+            pipes[2].material.map = wasteWaterTexture;
+            pipes[2].material.needsUpdate = true;
+
+            filters[1].material.map = valveTextureBad;
+            filters[1].material.needsUpdate = true;
+
+            // MOVES THE PIPE TEXTURES WHEN THE WATER IS CLEAN.
+        } else if (waterQuality === true) {
+            offsetX = offsetx;
+            offsetY = offsety;
+            // Pipe going from the filter to the valve. (CLEAN WATER).
+            waterPipeTexture.offset.set(-offsetx, 0); // Horizontal right
+            pipes[0].material.map = waterPipeTexture;
+            pipes[0].material.needsUpdate = true;
+            // Pipe going up from the transmission box to the tank. (CLEAN).
+            cleanWaterTexture.offset.set(0, -offsety); // Vertical Up
+            pipes[1].material.map = cleanWaterTexture;
+            pipes[1].material.needsUpdate = true;
+            // Pipe going horizontal from the clean water. (CLEAN).
+            cleanWaterHTexture.offset.set(-offsetx, 0); // Horizontal right
+            pipes[3].material.map = cleanWaterHTexture;
+            pipes[3].material.needsUpdate = true;
+            // Pipe going down into the holding tank. (CLEAN).
+            cleanWaterTextureD.offset.set(0, offsety); // Vertical Down
+            pipes[4].material.map = cleanWaterTextureD;
+            pipes[4].material.needsUpdate = true;
+
+            filters[1].material.map = valveTextureGood;
+            filters[1].material.needsUpdate = true;
+        }
+    }
+
+    /*
+     * updateText:
+     * This function is called within the animate function.
+     *
+     * PURPOSE: Update the text that needs to be changed based on actions in the game.
+     *
+     * CONSTRAINTS: Prevents the waterFlow from going below "0".
+     */
+    function updateText() {
+        appendFlow(waterFlow);
+        appendFilterLoad(filters[0].userData.filterLoad);
+        appendFloc(filters[0].userData.Flocculant);
+        appendTurbidity(sessionStorage.getItem('Turbidity'));
+        appendCapacity(window.sessionStorage.getItem('Capacity'));
+        appendPoints(window.sessionStorage.getItem('points'));
+        appendQuality();
+        if (waterFlow < 0) {
+            waterFlow = 0;
+        }
+    }
+
+    /*
+     * animate:
+     * Renders the functions that need to be changed every second of run time.
+     * PURPOSE: Allows for animations and physics simulation within the game.
+     */
+    animate = function () {
+        requestAnimationFrame(animate); // Allows rotation and Textures to be used
+        renderer.render(scene, camera); // what needs to be rendered
+        //scene.simulate(); // Simulates any physics within the scene
+        checkQuality();
+        changeColor(); // calls the changeColor function.
+        updateText(); // text to be updated
+        textureAnimation(); // animation of textures
+        disableRemoveFloc();
+
+    };
+    animate();
+
+    /*
+     * onWindowResize:
+     *
+     * Allows the position of objects to be changed when the browser window is resized.
+     */
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+</script>
+</body>
+</html>

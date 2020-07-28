@@ -1,0 +1,197 @@
+/* Prevents scrolling and makes the scene the full width of the screen */
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    padding: 0;
+    background-color: #dae3ff;
+}
+
+/* Header for the title of the game*/
+h1 {
+    font-size: 6vw;
+    position: absolute;
+    top: 0.1%;
+    left: 33%;
+    font-family: Arial, serif;
+    color: #030058;
+}
+
+/* Creates smaller text for the "2" in the title */
+.smaller {
+    font-size: 50%;
+}
+
+/* Header for the "mobile usage message" text */
+h2 {
+    position: absolute;
+    top: 20%;
+    right: 1%;
+    font-style: italic;
+    font-size: 1.3vw;
+    font-family: Arial, serif;
+    color: red;
+}
+
+/* Header for the instruction information */
+h3 {
+    font-size: 2vw;
+    position: absolute;
+    top: 48%;
+    left: 1%;
+    font-family: Arial, serif;
+    color: #030058;
+}
+
+/* Paragraph style for the instruction information */
+#p1 {
+    position: absolute;
+    top: 59%;
+    left: 2%;
+    font-size: 1.3vw;
+    max-width: 50vw;
+    font-family: Arial, serif;
+}
+
+/* Paragraph style for the instruction information. (Position differs from "p1") */
+#p2 {
+    position: absolute;
+    top: 66%;
+    left: 2%;
+    max-width: 49vw;
+    font-size: 1.3vw;
+    font-family: Arial, serif;
+}
+
+/* Paragraph style for the instruction information. (Position differs from "p1") */
+#p3 {
+    position: absolute;
+    top: 76%;
+    left: 2%;
+    max-width: 49vw;
+    font-size: 1.3vw;
+    font-family: Arial, serif;
+}
+
+/* Paragraph style for the instruction information. (Position differs from "p1") */
+#p4 {
+    position: absolute;
+    top: 86%;
+    left: 2%;
+    max-width: 50vw;
+    font-size: 1.3vw;
+    font-family: Arial, serif;
+}
+
+/* Background style of the game title */
+#headerBackground {
+    border: 2px solid black;
+    padding: 25px;
+    height: 20%;
+    background-color: rgba(110, 186, 251, 0.8);
+    background-size: 100% 100%;
+}
+
+/* Start button style */
+#start {
+    position: absolute; /* Makes the button positioning, dynamic */
+    top: 30%; /* Makes the button 30% down from the top of the page */
+    left: 2%; /* 2% left of the screen */
+    height: 12%;
+    width: 20%;
+    background-color: rgba(1, 105, 251, 0.82); /* Black w/ opacity */
+    border-radius: 5px;
+    font-family: Arial, serif;
+    font-weight: bold;
+}
+
+/* Tutorial page button style */
+#tutorialButton {
+    position: absolute; /* Makes the button positioning, dynamic */
+    top: 30%; /* Makes the button 30% down from the top of the page */
+    left: 25%; /* 25% left of the screen */
+    height: 12%;
+    width: 20%;
+    background-color: rgba(89, 166, 251, 0.82); /* Black w/ opacity */
+    border-radius: 5px;
+    font-family: Arial, serif;
+    font-weight: bold;
+}
+
+/* Overall location of the high score table*/
+#highScores {
+    margin-top: 4vw;
+    margin-right: 7vw;
+    float: right;
+    padding-bottom: 8vw;
+    max-height: 20vw;
+    overflow: auto;
+}
+
+/* Style of the score title */
+.scoreTitle {
+    display: inline-block;
+    width: 80vw;
+    max-width: 20vw;
+    font-size: 2.5vw;
+    text-align: center;
+}
+
+/* Style of the user name title */
+.userTitle {
+    display: inline-block;
+    width: 80vw;
+    max-width: 20vw;
+    font-size: 2.5vw;
+    text-align: left;
+}
+
+/* Decides the location for the "score" value within the table */
+.scoreWrapper {
+    margin-top: 1vw;
+    padding-bottom: 1vw;
+}
+
+/* Style of the score value */
+.score {
+    display: inline-block;
+    width: 50vw;
+    max-width: 20vw;
+    font-size: 2vw;
+    text-align: center;
+}
+
+/* Style of the name value */
+.name {
+    display: inline-block;
+    width: 50vw;
+    max-width: 20vw;
+    font-size: 2vw;
+    text-align: left;
+}
+
+/* Max width of the score column */
+.score, .scoreTitle {
+    max-width: 10vw;
+}
+
+/* Background color for odd numbered values in the table */
+.odd {
+    background-color: rgba(1, 105, 251, 0.82); /* Black w/ opacity */
+}
+
+/* Background color for even numbered values in the table */
+.even {
+    background-color: rgba(89, 166, 251, 0.82); /* Black w/ opacity */
+}
+
+/* This is the style for the general "button" div */
+button {
+    padding: 1px;
+    margin: 25px;
+    height: 6vw;
+    width: 9vw;
+    background-color: #2880d7;
+    color: black;
+    font-size: 2.5vw;
+}

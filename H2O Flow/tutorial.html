@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title> Tutorial </title>
+    <!-- Import scripts to allow usage of three.js and physi.js functions and variables-->
+    <script type="text/javascript" src="js/three.js"></script>
+
+    <!-- Import scripts of my own design to allow for cross script functions-->
+    <link rel="stylesheet" href="styleSheets/tutorialStyle.css">
+    <script type="text/javascript" src="gameScripts/lakeWater.js"></script>
+    <script type="text/javascript" src="gameScripts/filters.js"></script>
+    <script type="text/javascript" src="gameScripts/filterPipes.js"></script>
+    <script type="text/javascript" src="gameScripts/points.js"></script>
+    <script type="text/javascript" src="gameScripts/newPlayer.js"></script>
+
+</head>
+<body>
+
+<!-- Button for the general information modal -->
+<div id="generalInfo">
+    <button id="generalInfoButton" onclick="instructions()"> General Info</button>
+</div>
+<!-- Button and Modal that displays information for the Tutorial page -->
+<div id="instructionModal" class="modal">
+    <div class="modal-content">
+        <span class="close">Close</span>
+        <div id="tutorialInfo">
+            <h1> Tutorial page: </h1>
+            <p>.</p>
+            <p><span class="red">AIM:</span></p>
+            <p> The aim of the game is to make as <span
+                    class="green">much clean water as possible within 2 minutes.</span></p>
+            <p> This is achieved by managing the <span class="bold">Water Quality</span> shown on the screen.</p>
+            <p> To find out more information, click on one of the <span class="bold">"i"</span> or game play buttons.
+                (<span class="red">Red</span> and <span class="green">Green</span> arrows).</p>
+            <p><span class="red"><span class="bold">Points made on this page CANNOT be saved.</span></span></p>
+        </div>
+    </div>
+</div>
+<!-- Button that allows the display of information written within the gameInfoModal -->
+<button id="gameValuesInfoButton" onclick="gameInfo()">i</button>
+<!-- This is the Modal for the information regarding the elements present at the top of the page.
+     The Modal is made of paragraph tags, which have relevant information regarding the elements in question.-->
+<div id="gameInfoModal" class="modal">
+    <div class="modal-content">
+        <span class="close">Close</span>
+        <div id="gameInfo">
+            <h1> Game Properties: </h1>
+            <p>.</p>
+            <p>These are the values that are important to the game.</p>
+            <p> The <span class="bold">TIMER</span> shows how long you have left in the game.</p>
+            <p><span class="bold">WATER FLOW</span>, is the value that effects how much water is sent to the tank each
+                second,
+                and the amount of points you will get. <span class="red">(This value goes down when the filter is too dirty).</span>
+            </p>
+            <p><span class="bold">TANK CAPACITY</span>, is the amount of water that is in your tank.
+                If the value goes <span class="red">below 50</span>, you can <span class="bold">BUY WATER</span>.
+                Make sure you keep a good amount of water in the tank,
+                <span class="red">if you run out, the game ends.</span></p>
+            <p><span class="bold">POINTS</span>, represents the amount of money you have made from making clean water.
+            </p>
+            <p><span class="green">You get points for sending clean water to the tank.</span>
+                <span class="red">You lose points by preforming actions within the game.</span></p>
+        </div>
+    </div>
+</div>
+<!-- Prints the timer to the screen. This timer has no function, but shows the user how much time they would have. -->
+<div id="Timer"> Time Left:
+    <label id="minutes">02</label>:<label id="seconds">00</label>
+</div>
+<!-- prints the flow Rate to the screen, which is updated during run time-->
+<div id="flow">Flow Rate: 0 litres</div>
+<!-- Prints the Tank Capacity to the screen, which is updated during run time -->
+<div id="capacity"></div>
+<!-- Prints the Points to the screen -->
+<div id="points"></div>
+<!-- Prints the value for the Turbidity to the screen. This is also updated at run time. -->
+<div id="filterTurbidity"></div>
+<!--Information button for the Turbidity. This button calls the "turbInfo" JavaScript function. -->
+<button id="turbInfoButton" onclick="turbInfo()">i</button>
+<!-- Modal that displays information for the Turbidity. Uses the same principles and function of the previous Modal.-->
+<div id="turbInfoModal" class="modal">
+    <div class="modal-content">
+        <span class="close">Close</span>
+        <div id="turbInfo">
+            <h1> TURBIDITY LEVELS: </h1>
+            <p>.</p>
+            <p><span class="bold">Turbidity</span> refers to the amount of dirt in the water. (Sand, Leaves, Rocks).
+            </p>
+            <p> It is used to measure the <span class="bold">quality of the water that is coming from the lake.</span>
+            </p>
+
+            <p><span class="green">In order to make clean water, you want to try and keep the Turbidity below 6.</span>
+                <span class="red">(Anything above 6 is not good enough to send).</span></p>
+            <p> You can change the value of the Turbidity by adding <span class="bold">Flocculant</span> to the water.
+            </p>
+            <p><span class="bold">TIP: The Turbidity changes over time, so you always want to change the Flocculant values.</span>
+            </p>
+        </div>
+    </div>
+</div>
+<!-- Prints the flocculantLevel to the screen. This is updated during the run time.-->
+<div id="flocculantLevel"></div>
+<!-- This button is the GREEN TRIANGLE that is used within the game. This buttons calls the,
+addFloc and flocInfo, JavaScript functions when clicked on. -->
+<button id="addFloc" onclick="addFloc(); flocInfo();" style="position: fixed;"></button>
+<!-- Modal that displays information for the Flocculant. Uses the same principles and function of the previous Modal.-->
+<div id="flocInfoModal" class="modal">
+    <div class="modal-content">
+        <span class="close">Close</span>
+        <div id="flocInfo">
+            <h1> Flocculant (Floc): </h1>
+            <p>.</p>
+            <p> Flocculant is the term used for liquid that is used to help "glue" dirt together.
+                This makes it easier for the dirt to be caught and cleaned by the filter.</p>
+            <p><span class='green'>GREEN</span> arrow <span class='green'>ADDS</span> Flocculant,
+                and takes away from the Turbidity value.</p>
+            <p><span class='red'>RED</span> arrow <span class='red'>REMOVES</span> Flocculant,
+                and adds to the Turbidity value.</p>
+            <p><span class="bold">Try and find the correct amount of Flocculant to clean the water.</span></p>
+            <p><span
+                    class="red">You can only add up to 10 flocculant into the water, until the filter is cleaned.</span>
+            </p>
+            <p> The more Flocculant you add to the water, the faster the filter will fill up.</p>
+            <p> For example, <span class="bold">7 Flocculant = 7% fill every 2 seconds.</span></p>
+
+        </div>
+    </div>
+</div>
+<!-- This button is the RED TRIANGLE that is used within the game. This buttons calls the,
+removeFloc and flocInfo, JavaScript functions when clicked on. -->
+<button id="removeFloc" onclick="removeFloc(); flocInfo();" style="position: fixed;"></button>
+<!-- Prints the information regarding the filterLoad to the screen. This is updated during run time. -->
+<div id="filterLoad"></div>
+<!-- This button calls the filterInfo function when pressed. -->
+<button id="filterInfoButton" onclick="filterInfo()">i</button>
+<!-- Modal that displays information for the Filter. Uses the same principles and function of the previous Modal.-->
+<div id="filterInfoModal" class="modal">
+    <div class="modal-content">
+        <span class="close">Close</span>
+        <div id="filterInfo">
+            <h1> WATER FILTER: </h1>
+            <p>.</p>
+            <p> This is the filter which cleans the water. </p>
+            <p> The <span class="bold">Filter Load</span>, shows how clean the filter is.
+                <span class="green">The lower the number, the cleaner the filter.</span></p>
+            <p> The filter changes colour to show how dirty the filter is.</p>
+            <p><span class="red">The dirtier the filter, the less Flow you produce. (less Flow = less Points).</span>
+            </p>
+            <p><span class="green">You can clean the filter by pressing the "Clean" button.</span></p>
+            <p><span class="bold">Give it a try!</span></p>
+        </div>
+    </div>
+</div>
+<!--Prints the message to be shown when the cleanFilter Button is pressed.-->
+<div id="filterCleaned"></div>
+<!--This button calls the cleanFilter and cleanFilterInfo, JavaScript functions when pressed. -->
+<button id="cleanFilter" onclick="cleanFilter(); cleanFilterInfo();" style="position: fixed;">Clean</button>
+<!-- Modal that displays information for the cleanFilter. Uses the same principles and function of the previous Modal.-->
+<div id="cleanInfoModal" class="modal">
+    <div class="modal-content">
+        <span class="close">Close</span>
+        <div id="cleanInfo">
+            <h1> Cleaning the Filter: </h1>
+            <p>.</p>
+            <p> This button lets you <span class="green">clean the filter</span> when pressed. </p>
+            <p> This action sets the <span
+                    class="bold">FILTER LOAD back to 0, and resets the Flocculant level to 1.</span></p>
+            <p> This action also returns the <span class="bold">FLOW RATE back to 10</span>, as the filter has been
+                cleaned.</p>
+            <p> You can press this button many times, but it <span class="red">costs 10 points and 10 capacity to preform.</span>
+            </p>
+            <p><span class="bold">It is recommended you use this button when the filter load is 60% or above.</span></p>
+        </div>
+    </div>
+</div>
+<!-- This button calls the buyWater and the buyWaterInfo, JavaScript functions when pressed. -->
+<button id="buyWaterButton" onclick="buyWater(); buyWaterInfo();">Buy Water: £50</button>
+<!-- Modal that displays information for the buyWater. Uses the same principles and function of the previous Modal.-->
+<div id="buyInfoModal" class="modal">
+    <div class="modal-content">
+        <span class="close">Close</span>
+        <div id="buyInfo">
+            <h1> Buy Water: </h1>
+            <p>.</p>
+            <p> This buttons lets you buy water, when the <span class="bold">Tank Capacity is below 50.</span></p>
+            <p><span class="green">This action re-fills your tank to 100.</span></p>
+            <p><span class="red">The GAME IS OVER</span> if the Tank Capacity gets to <span class="red">0</span>,
+                so this button is useful in a pinch.</p>
+            <p><span class="green">This action is good for keeping your tank full.</span>
+                <span class="red">However, this action costs 50 points to preform.</span></p>
+            <p><span class="bold">It is recommended to use this button when, you are unable to make enough water.</span>
+            </p>
+        </div>
+    </div>
+</div>
+<!-- Button that displays information for the valve -->
+<button id="valveInfoButton" onclick="valveInfo()">i</button>
+<!-- Modal that displays information for the Valve. Uses the same principles and function of the previous Modal.-->
+<div id="valveInfoModal" class="modal">
+    <div class="modal-content">
+        <span class="close">Close</span>
+        <div id="valveInfo">
+            <h1> Water valve: </h1>
+            <p>.</p>
+            <p> This valve shows where the water is going. </p>
+            <p><span class="green">The blue pipe shows that the water is good to send up to the tank.</span></p>
+            <p><span class="red">The dark green pipe shows the water is being sent down into waste.</span></p>
+            <p> The valve changes direction, based on the Water Quality.</p>
+            <p><span class="bold">You can use this to help you see where your water is going.</span></p>
+        </div>
+    </div>
+</div>
+<!-- Creates a div which then loads in an image of SUNNY WEATHER to the screen -->
+<div id="weatherSun">
+    <img src="texture/weatherSun.png" alt="invalid" style="width:15vw; height: 5vw">
+</div>
+<!-- Creates a div which then loads in an image of RAINING WEATHER to the screen -->
+<div id="weatherRain">
+    <img src="texture/weatherRain.png" alt="invalid" style="width:15vw; height: 5vw">
+</div>
+<!-- Modal that displays information for the Weather. Uses the same principles and function of the previous Modal.-->
+<div id="weatherInfoModal" class="modal">
+    <div class="modal-content">
+        <span class="close">Close</span>
+        <div id="weatherInfo">
+            <h1> Weather: </h1>
+            <p>.</p>
+            <p> Looks like the weather has changed!</p>
+            <p><span class="green">When it is Sunny, the Turbidity is likely to be low</span>, this is because of the
+                drop in lake water.</p>
+            <p><span class="bold">This means there will be less dirt in the water to clean.</span></p>
+            <p><span class="red">When it is Raining, the Turbidity is likely to be high.</span> This is because of the
+                rain causing
+                more run off water.</p>
+            <p> This water brings in more dirt into the lake. This requires <span class="bold">more Flocculant to
+                make the water clean.</span></p>
+        </div>
+    </div>
+</div>
+<!-- Button for the game -->
+<div id="filterRoomButton">
+    <a href="filterRoom.html">
+        <button id="filterRoom"> Play Game</button>
+    </a>
+</div>
+<!-- Button for the home page -->
+<div id="homePage">
+    <a href="index.html">
+        <button id="homeButton" onclick="resetVariables()"> Back to Home</button>
+    </a>
+</div>
+<!--Prints the text that shows the Water Quality within the game. -->
+<div id="waterQuality"></div>
+<!-- Prints the label for the Holding Tank -->
+<div id="tank">Holding Tank</div>
+
+<script type="text/javascript">
+
+    console.clear(); //clears the console when loaded.
+    window.onload = onWindowResize; // Resize the window when loaded. Helps optimise for lower resolutions
+
+
+    // Internal function callers, that are required globally within the file.
+    initScene();
+    lakeWater(); // External function caller, that allows use of external functions.
+    animatedTextureLoader();
+
+    // GLOBAL VARIABLES
+    var camera, scene, renderer;
+    // Creates global variables, that are used within different functions.
+    var waterQuality = true, waterFlow = 10, season;
+    // Sets the initial values for variables to be altered during the game.
+    var tutorialPoints = 0, tutorialTurbidity = 8, tutorialCapacity = 100;
+    // Variables that check the amount of clicks made on HTML buttons. (initially set to 0)
+    var buywaterClicks = 0, cleanFilterClicks = 0, weatherInfo = 0;
+    // Initialises the timers to be used within the file.
+    var filterTimer, pointsTimer;
+    // Initialises the textures that will be animated within the file.
+    var waterPipeTexture, cleanWaterHTexture, wasteWaterPipeTexture, wasteWaterTexture, cleanWaterTexture,
+        cleanWaterTextureD, lakePipeTexture, lakePipeTextureV, valveTextureBad, valveTextureGood;
+
+    // Event listener for the windowResize function.
+    window.addEventListener('resize', onWindowResize, false);
+
+    /* initScene:
+     *
+     * Initialises the Scene, Camera, Lights and Rendered for the game.
+     *
+     * Purpose: Sets up the scene properties and creates variables that are needed at the start of the game.
+     *
+    */
+    function initScene() {
+        offsetX = 0; // The amount of pixels the textures are animated by on the X plane.
+        offsetY = 0;  // The amount of pixels the textures are animated by on the Y plane.
+        season = 1; // Initial Season for the start of the game. (Required to be "1", to allow for proper switching)
+
+        // Renderer which allows the scene to be rendered
+        renderer = new THREE.WebGLRenderer();
+        document.body.appendChild(renderer.domElement);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        // Sets the scene and gives it properties
+        scene = new THREE.Scene();
+        scene.background = new THREE.TextureLoader().load("filterRoom.png"); // Gives the background a texture
+
+        var width = 1920; // How much of the scene width can be seen by the camera.
+        var height = 940; // How much of the scene height can be seen by the camera.
+        camera = new THREE.OrthographicCamera(width / 40, width / -40, height / 45, height / -45, 0, 50000);
+        // Cameras position in the scene is set here
+        camera.position.x = 0;
+        camera.position.y = 5;
+        camera.position.z = 6;
+
+        var light = new THREE.AmbientLight(0x404040); // soft white light
+        scene.add(light);
+
+        instructions(); // calls the instructions function on scene load.
+        document.getElementById("weatherSun").style.visibility = "visible"; // allows the season div to be visible.
+
+    }
+
+    /*
+     * RETURNS: MODAL FOR TUTORIAL PAGE INFORMATION
+     *
+     * STOPS: GAME TIMERS WHEN MODAL IS OPEN
+     */
+    function instructions() {
+        var modal = document.getElementById('instructionModal');
+        var span = document.getElementsByClassName("close")[0];
+        modal.style.display = "block";
+        clearInterval(pointsTimer);
+        clearInterval(filterTimer);
+
+        // Starts timers for the game and closes the Modal when called.
+        span.onclick = function () {
+            modal.style.display = "none";
+            pointsTimer = setInterval(gainingPoints, 2000);
+            filterTimer = setInterval(filterLoadTimer, 2000);
+            setTimeout(seasons, 15000); // sets the season to change every 2 minutes
+        }
+    }
+
+    /*
+     * RETURNS: MODAL FOR GAME INFORMATION
+     *
+     * STOPS: GAME TIMERS WHEN MODAL IS OPEN
+     */
+    function gameInfo() {
+        var modal = document.getElementById('gameInfoModal');
+        var span = document.getElementsByClassName("close")[1];
+        modal.style.display = "block";
+        clearInterval(pointsTimer);
+        clearInterval(filterTimer);
+
+        span.onclick = function () {
+            modal.style.display = "none";
+            pointsTimer = setInterval(gainingPoints, 2000);
+            filterTimer = setInterval(filterLoadTimer, 2000);
+        }
+    }
+
+    /*
+     * RETURNS: MODAL FOR TURBIDITY INFORMATION
+     *
+     * STOPS: GAME TIMERS WHEN MODAL IS OPEN
+     */
+    function turbInfo() {
+        var modal = document.getElementById('turbInfoModal');
+        var span = document.getElementsByClassName("close")[2];
+        modal.style.display = "block";
+        clearInterval(pointsTimer);
+        clearInterval(filterTimer);
+
+        span.onclick = function () {
+            modal.style.display = "none";
+            pointsTimer = setInterval(gainingPoints, 2000);
+            filterTimer = setInterval(filterLoadTimer, 2000);
+        }
+    }
+
+    /*
+     * CONSTRAINT: CAN ONLY BE CALLED WHEN THE FLOCCULANT IS EQUAL TO 0 OR 2.
+     *
+     * RETURNS: MODAL FOR FLOCCULANT LEVEL INFORMATION
+     *
+     * STOPS: GAME TIMERS WHEN MODAL IS OPEN
+     */
+    function flocInfo() {
+        if (filters[0].userData.Flocculant === 2 || filters[0].userData.Flocculant === 0) {
+            var modal = document.getElementById('flocInfoModal');
+            var span = document.getElementsByClassName("close")[3];
+            modal.style.display = "block";
+            clearInterval(pointsTimer);
+            clearInterval(filterTimer);
+
+            span.onclick = function () {
+                modal.style.display = "none";
+                pointsTimer = setInterval(gainingPoints, 2000);
+                filterTimer = setInterval(filterLoadTimer, 2000);
+            }
+        }
+    }
+
+    /*
+     * RETURNS: MODAL FOR FILTER INFORMATION
+     *
+     * STOPS: GAME TIMERS WHEN MODAL IS OPEN
+     */
+    function filterInfo() {
+        var modal = document.getElementById('filterInfoModal');
+        var span = document.getElementsByClassName("close")[4];
+        modal.style.display = "block";
+        clearInterval(pointsTimer);
+        clearInterval(filterTimer);
+
+        span.onclick = function () {
+            modal.style.display = "none";
+            pointsTimer = setInterval(gainingPoints, 2000);
+            filterTimer = setInterval(filterLoadTimer, 2000);
+        }
+    }
+
+    /*
+     * CONSTRAINT: ADDS "1" TO THE cleanFilterClicks VARIABLE.
+     * CONSTRAINT: MODAL CAN ONLY BE VIEWED WHEN THE CLICKS VARIABLE IS LESS THAN "2".
+     *
+     * RETURNS: MODAL FOR cleanFilter BUTTON INFORMATION
+     *
+     * STOPS: GAME TIMERS WHEN MODAL IS OPEN
+     */
+    function cleanFilterInfo() {
+        var modal = document.getElementById('cleanInfoModal');
+        var span = document.getElementsByClassName("close")[5];
+        modal.style.display = "block";
+        clearInterval(pointsTimer);
+        clearInterval(filterTimer);
+        cleanFilterClicks += 1;
+        if (cleanFilterClicks > 2) {
+            modal.style.display = "none";
+        }
+
+        span.onclick = function () {
+            modal.style.display = "none";
+            pointsTimer = setInterval(gainingPoints, 2000);
+            filterTimer = setInterval(filterLoadTimer, 2000);
+        }
+    }
+
+    /*
+     * CONSTRAINT: ADDS "1" TO THE buyWaterClicks VARIABLE.
+     * CONSTRAINT: MODAL CAN ONLY BE VIEWED WHEN THE CLICKS VARIABLE IS LESS THAN "2".
+     *
+     * RETURNS: MODAL FOR buyWater BUTTON INFORMATION
+     *
+     * STOPS: GAME TIMERS WHEN MODAL IS OPEN
+     */
+    function buyWaterInfo() {
+        var modal = document.getElementById('buyInfoModal');
+        var span = document.getElementsByClassName("close")[6];
+        modal.style.display = "block";
+        clearInterval(pointsTimer);
+        clearInterval(filterTimer);
+        buywaterClicks += 1;
+        if (buywaterClicks > 2) {
+            modal.style.display = "none";
+        }
+
+        span.onclick = function () {
+            modal.style.display = "none";
+            pointsTimer = setInterval(gainingPoints, 2000);
+            filterTimer = setInterval(filterLoadTimer, 2000);
+        }
+    }
+
+    /*
+     * RETURNS: MODAL FOR VALVE INFORMATION
+     *
+     * STOPS: GAME TIMERS WHEN MODAL IS OPEN
+     */
+    function valveInfo() {
+        var modal = document.getElementById('valveInfoModal');
+        var span = document.getElementsByClassName("close")[7];
+        modal.style.display = "block";
+        clearInterval(pointsTimer);
+        clearInterval(filterTimer);
+
+        span.onclick = function () {
+            modal.style.display = "none";
+            pointsTimer = setInterval(gainingPoints, 2000);
+            filterTimer = setInterval(filterLoadTimer, 2000);
+        }
+    }
+
+    /*
+     * CREATES: FILTER FOR COLOUR CHANGES
+     * CONSTRAINT: Must be initialised globally to allow for full usage.
+     * CONSTRAINT: Need to be positioned before the "colorChange" Function to allow the function to work.
+     */
+    var boxGeometry = new THREE.ConeGeometry(5, 10, 22); // sets the geometry for the object (height, width, depth)
+    var F1Material = new THREE.MeshBasicMaterial({color: 0x6EF974});
+    var foregroundFilter = new THREE.Mesh(boxGeometry, F1Material, 5);
+    foregroundFilter.position.x = (24);
+    foregroundFilter.position.y = (5);
+    foregroundFilter.position.z = (0);
+    foregroundFilter.rotation.z = 3.14;
+    scene.add(foregroundFilter);
+
+    /*
+     * CREATES: A cube that is used to visualise the tank filling up with water.
+     * CONSTRAINT: Must be created globally to allow for proper usage.
+     *
+    */
+    var tankGeometry = new THREE.BoxGeometry(28, 48, 1);
+    var tankMaterial = new THREE.MeshBasicMaterial({color: 0x00AFD1});
+    var tankWater = new THREE.Mesh(tankGeometry, tankMaterial, 5);
+    tankWater.position.x = (-35);
+    tankWater.position.y = (-16);
+    tankWater.position.z = (1);
+    scene.add(tankWater);
+
+    /*
+     * RETURNS: FILTER TO THE SCENE
+     */
+    var filters = new Filters();
+    for (var i = 0; i < filters.length; i++) {
+        scene.add(filters[i]);
+    }
+
+    // Initial text callers. Prints the values of the respective variables before the values are altered.
+    appendFilterLoad(filters[0].userData.filterLoad);
+    appendFloc(filters[0].userData.Flocculant);
+    appendTurbidity(tutorialTurbidity);
+
+    /*
+     * RETURNS: PIPES TO THE SCENE
+     */
+    var pipes = new Pipes();
+    for (var i = 0; i < pipes.length; i++) {
+        scene.add(pipes[i]);
+    }
+
+    /*
+     * RETURNS: tank[2] TO THE SCENE.
+     */
+    var tank = new lakeWater();
+    for (var i = 0; i < tank.length; i++) {
+        scene.add(tank[2]);
+    }
+
+
+    /*
+    * filterLoadTimer:
+    *
+    * This function calculates how much the filter percentage will increase by, depending on the amount of,
+    * flocculant within the water.
+    * Additionally, this function will start reducing the water flow, when the filter percentage goes above 60%.
+    *
+    * PURPOSE: Teaches the user that the more flocculant added, the dirtier the filter will become.
+    */
+    function filterLoadTimer() {
+        if (filters[0].userData.filterLoad <= 100) {
+            // adds the flocculant value to the filterLoad.
+            filters[0].userData.filterLoad += filters[0].userData.Flocculant;
+        } else if (filters[0].userData.filterLoad >= 100) {
+            filters[0].userData.filterLoad = 100; // constraints the filterLoad to 100%.
+        }
+        if (filters[0].userData.filterLoad >= 60) { // reduces the water flow when the filter is 60% and above full.
+            waterFlow -= 1;
+        }
+    }
+
+    /*
+     * changeColor:
+     *
+     * PURPOSE: Change the colour of the filter to visualise the filter getting dirty.
+     *
+     * This function uses the data assigned to the filters[0] object, to help calculate when,
+     * the colour of the foregroundFilter will change.
+     *
+     * The foregroundFilter refers to the object created within this file, whereas the filters[0],
+     * is created in the external "filters" file.
+     *
+    */
+    function changeColor() {
+        // checks background filters "filterLoad" data.
+        if (filters[0].userData.filterLoad >= 20 && filters[0].userData.filterLoad < 30) {
+            foregroundFilter.material.color.setHex(0xFFF777); // changes foreground filer color.
+        }
+        if (filters[0].userData.filterLoad >= 30 && filters[0].userData.filterLoad < 50) {
+            foregroundFilter.material.color.setHex(0xFFDE64); // changes foreground filer color.
+        } else if (filters[0].userData.filterLoad >= 50 && filters[0].userData.filterLoad < 70) {
+            foregroundFilter.material.color.setHex(0xFFC264); // changes foreground filer color.
+        }
+        if (filters[0].userData.filterLoad >= 70 && filters[0].userData.filterLoad < 90) {
+            foregroundFilter.material.color.setHex(0xF38755); // changes foreground filer color.
+        } else if (filters[0].userData.filterLoad >= 90 && filters[0].userData.filterLoad < 100) {
+            foregroundFilter.material.color.setHex(0xF36655); // changes foreground filer color.
+        }
+        if (filters[0].userData.filterLoad === 100) {
+            foregroundFilter.material.color.setHex(0xD23838); // changes foreground filer color.
+        }
+    }
+
+    /*
+     * This function "cleans the filter" by getting the relevant userData and setting to it's original value.
+     *
+     * PURPOSE: Resets the filters[0] properties to their original value to simulate the filter being cleaned.
+     * The values that are reset are, filterLoad, Flocculant and waterFlow.
+     * DISPLAYS: Text on the screen to visualise what the function has done. (This text is removed after 4 seconds).
+     * REMOVES: This function removes "10" from the points and capacity each time it is called.
+     */
+    function cleanFilter() {
+        foregroundFilter.material.color.setHex(0x6EF974); // changes the colour to "light green".
+        filters[0].userData.filterLoad = 0;
+        filters[0].userData.Flocculant = 1;
+        // reduces the capacity and points variables by 10 when the function is called
+        tutorialPoints -= 10;
+        tutorialCapacity -= 10;
+        waterFlow = 10;
+        appendPointsLost();
+        // This function, displays text for 4 seconds and then removes it from the scene.
+        var removeText = function () {
+            document.getElementById("filterCleaned").style.display = "none";
+        };
+        setTimeout(removeText, 4000);
+        document.getElementById("filterCleaned").style.display = "block";
+    }
+
+    /*
+     * This functions adds 1 value to the Flocculant and removes 1 from the Turbidity.
+     *
+     * CONSTRAINT: This function is only functions when the Flocculant userData is below 10,
+     * and the Turbidity is above 0. This is to constraint the function into having logical effects.
+     * It is advised to have these constraints to prevent, unusual game play features.
+     */
+    function addFloc() {
+        if (filters[0].userData.Flocculant < 10) {
+            filters[0].userData.Flocculant += 1;
+
+            if (tutorialTurbidity > 0) {
+                tutorialTurbidity -= 1;
+            }
+        }
+    }
+
+    /*
+     * This functions removes 1 value to the Flocculant and adds 1 to the Turbidity.
+     *
+     * CONSTRAINT: This function is only functions when the Flocculant userData is below or equal to 10 and above 0.
+     * The Turbidity must be below 10. This is to constraint the function into having logical effects.
+     * It is advised to have these constraints to prevent, unusual game play features.
+     */
+    function removeFloc() {
+        if (filters[0].userData.Flocculant <= 10 && filters[0].userData.Flocculant > 0) {
+            filters[0].userData.Flocculant -= 1;
+        }
+        if (tutorialTurbidity < 10) {
+            tutorialTurbidity += 1;
+        }
+    }
+
+    /*
+      * checkQuality:
+      *
+      * This function determines the quality of the water, based on parameters that need to be met.
+      * Decides if the water quality is "Good" or "Bad" depending on the Turbidity value.
+      * Can be easily altered to handle more parameters, by adding more checks into the "if statements".
+      *
+      * PURPOSE: Makes the indication of water quality easy for the user.
+   */
+    function checkQuality() {
+        if (tutorialTurbidity >= 6) {
+            waterQuality = false;
+        } else if (tutorialTurbidity <= 5) {
+            waterQuality = true;
+        }
+    }
+
+    /*
+     * gainingPoints:
+     *
+     * PURPOSE: This function calculates how many points the player will make based on the waterFlow, and the
+     * quality of the water.
+     *
+     * waterQuality === true: The value of the waterFLow is added to the points variable if the quality is good.
+     * The waterFlow value is also added to the capacity variable. (10 flow = 10 points/capacity).
+     *
+     * waterQuality === false: The value of the waterFlow is removed from the points variable if the quality is bad.
+     * The waterFlow value is also removed from the capacity variable. (10 flow = -10 points/capacity).
+     *
+     * CONSTRAINT: Prevents the points and capacity from going below 0 when the values are altered.
+     * Prevents the capacity from going above 100 when excess capacity is made.
+     *
+    */
+    function gainingPoints() {
+        if (waterQuality === true) {
+            tutorialPoints += waterFlow; // adds the waterFlow value to tutorialPoints.
+            tutorialCapacity += waterFlow
+        } else if (waterQuality === false) {
+            tutorialPoints -= waterFlow; // removes the waterFlow value from tutorialPoints.
+            tutorialCapacity -= waterFlow;
+        }
+        if (tutorialPoints <= 0) {
+            tutorialPoints = 0;
+        }
+        if (tutorialCapacity <= 0) {
+            tutorialCapacity = 0;
+        } else if (tutorialCapacity >= 100) {
+            tutorialCapacity = 100;
+        }
+    }
+
+
+    /*
+     * PURPOSE: Allows the user to increase tank capacity to prevent losing the game.
+     *
+     * This function removes "50" from the points variable and adds "50" to the tank capacity.
+     * In addition, this function re-scales the tank water to the original size, to visualise a "re-fill"
+     *
+     * CONSTRAINT: This function can only be used when the capacity variable has a value below or equal to 50.
+     * This prevents unnecessary game play mechanics.
+     *
+    */
+    function buyWater() {
+        if (tutorialCapacity <= 50) { // checks to see the value of capacity variable
+            // Adds 50 to the capacity value and removes 50 from the points variable
+            tutorialPoints -= 50;
+            tutorialCapacity += 50;
+            tank[3].scale.y = (1);
+        }
+    }
+
+    /*
+     * Seasons:
+     *
+     * PURPOSE: Changes between seasons to add more complexity to the game play.
+     * Additionally, shows a graphic which alerts to the user what the weather is.
+     *
+     * This function changes the season from "Sun" to "rain" every 15 seconds of play time.
+     *
+    */
+    function seasons() {
+        weatherModal();
+        if (season === 1) {
+            document.getElementById("weatherRain").style.visibility = "visible";
+            document.getElementById("weatherSun").style.visibility = "hidden";
+            weatherInfo += 1;
+            season = 2;
+        }
+        else if (season === 2) {
+            document.getElementById("weatherRain").style.visibility = "hidden";
+            document.getElementById("weatherSun").style.visibility = "visible";
+            season = 1;
+        }
+        setTimeout(seasons, 15000);
+    }
+
+    /*
+     * RETURNS: MODAL FOR WEATHER INFORMATION
+     *
+     * CONSTRAINT: Modal is only displayed when the weatherInfo variable is below 1.
+     *
+    */
+    function weatherModal() {
+        var modal = document.getElementById('weatherInfoModal');
+        var span = document.getElementsByClassName("close")[8];
+        modal.style.display = "block";
+
+        if (weatherInfo >= 1) {
+            modal.style.display = "none";
+        }
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+    }
+
+    // ALLOWS THE DISPLAY OF TEXT TO THE SCREEN FROM VARIOUS SOURCES
+    function appendFilterLoad(txt) {
+        document.getElementById('filterLoad').innerHTML = "Filter Load: " + txt + "%";
+    }
+
+    // ALLOWS THE DISPLAY OF TEXT TO THE SCREEN FROM VARIOUS SOURCES
+    function appendFloc(txt) {
+        document.getElementById('flocculantLevel').innerHTML = "Flocculant Level: " + txt;
+    }
+
+    // ALLOWS THE DISPLAY OF TEXT TO THE SCREEN FROM VARIOUS SOURCES
+    function appendTurbidity(txt) {
+        document.getElementById('filterTurbidity').innerHTML = "Water Turbidity: " + txt;
+    }
+
+    // ALLOWS THE DISPLAY OF TEXT TO THE SCREEN FROM VARIOUS SOURCES
+    function appendFlow(txt) {
+        document.getElementById('flow').innerHTML = "Flow Rate: " + txt + " litres";
+    }
+
+    // ALLOWS THE DISPLAY OF TEXT TO THE SCREEN FROM VARIOUS SOURCES
+    function appendPointsLost() {
+        document.getElementById('filterCleaned').innerHTML = "-10 " + "points and capacity";
+    }
+
+    // ALLOWS THE DISPLAY OF TEXT TO THE SCREEN FROM VARIOUS SOURCES
+    function appendPoints(txt) {
+        document.getElementById('points').innerHTML = "Points: " + txt;
+    }
+
+    // ALLOWS THE DISPLAY OF TEXT TO THE SCREEN FROM VARIOUS SOURCES
+    function appendCapacity(txt) {
+        document.getElementById('capacity').innerHTML = "Tank Capacity: " + txt + " Litres";
+    }
+
+    // Changes the text displayed for "waterQuality" depending on the water quality
+    function appendError() {
+        if (waterQuality === false) {
+            document.getElementById('waterQuality').innerHTML = "Water Quality: Bad";
+        } else if (waterQuality === true) {
+            document.getElementById('waterQuality').innerHTML = "Water Quality: Good";
+        }
+    }
+
+    /*
+     * updateText:
+     *
+     * This function is called within the animate function.
+     *
+     * PURPOSE: Update the text that needs to be changed based on actions in the game.
+     *
+     * CONSTRAINTS: Prevents the waterFlow from going below "0".
+     */
+    function updateText() {
+        changeColor();
+        appendFlow(waterFlow);
+        if (waterFlow < 0) {
+            waterFlow = 0;
+        }
+        appendFilterLoad(filters[0].userData.filterLoad);
+        appendFloc(filters[0].userData.Flocculant);
+        appendTurbidity(tutorialTurbidity);
+        appendCapacity(tutorialCapacity);
+        appendPoints(tutorialPoints);
+        appendError();
+    }
+
+    /*
+   * animatedTextureLoader:
+   *
+   * This function loads in textures to be used for animation.
+   * Additionally, allows the textures to be mirror wrapped. (This smooths the animation).
+   *
+   * PURPOSE: Visual aid of water being moved to the holding tank.
+   */
+    function animatedTextureLoader() {
+        // Pipe going from the filter to the valve. (CLEAN WATER).
+        waterPipeTexture = new THREE.TextureLoader().load('waterTexture/waterPipeH.png');
+        waterPipeTexture.wrapS = THREE.MirroredRepeatWrapping;
+        // Pipe going from the filter to the valve. (WASTE WATER).
+        wasteWaterPipeTexture = new THREE.TextureLoader().load('waterTexture/wasteWaterPipeH.png');
+        wasteWaterPipeTexture.wrapS = THREE.MirroredRepeatWrapping;
+        // Pipe going down from the transmission box. (WASTE).
+        wasteWaterTexture = new THREE.TextureLoader().load('waterTexture/wasteWaterPipe.png');
+        wasteWaterTexture.wrapT = THREE.MirroredRepeatWrapping;
+        // Pipe going up from the transmission box to the tank. (CLEAN).
+        cleanWaterTexture = new THREE.TextureLoader().load('waterTexture/cleanWaterPipe.png');
+        cleanWaterTexture.wrapT = THREE.MirroredRepeatWrapping;
+        // Pipe going horizontal from the clean water. (CLEAN).
+        cleanWaterHTexture = new THREE.TextureLoader().load('waterTexture/cleanWaterH.png');
+        cleanWaterHTexture.wrapS = THREE.MirroredRepeatWrapping;
+        // Pipe going down into the holding tank. (CLEAN).
+        cleanWaterTextureD = new THREE.TextureLoader().load('waterTexture/cleanWaterPipeD.png');
+        cleanWaterTextureD.wrapT = THREE.MirroredRepeatWrapping;
+        // Pipe from the lake scene.
+        lakePipeTexture = new THREE.TextureLoader().load('waterTexture/lakePipe.png');
+        lakePipeTexture.wrapS = THREE.MirroredRepeatWrapping;
+        // Pipe down to the filter
+        lakePipeTextureV = new THREE.TextureLoader().load('waterTexture/lakePipeV.png');
+        lakePipeTextureV.wrapT = THREE.MirroredRepeatWrapping;
+        // texture for the valve when the water is bad.
+        valveTextureBad = new THREE.TextureLoader().load('waterTexture/valveBad.png');
+        // texture for the valve when the water is good.
+        valveTextureGood = new THREE.TextureLoader().load('waterTexture/valveGood.png');
+    }
+
+    /*
+     * textureAnimation:
+     *
+     * This function moves the texture in the positions that are specified.
+     *
+     * PURPOSE: To show the water flowing in the correct direction to their respective sources.
+     *
+     * This function decides which pipes will be animated, based off the waterQuality.
+     */
+    function textureAnimation() {
+        var offsety = offsetY + 0.005;
+        var offsetx = offsetX + 0.003;
+
+        // TEXTURE FOR LAKE PIPE HORIZONTAL
+        lakePipeTexture.offset.set(-offsetx, 0);
+        pipes[5].material.map = lakePipeTexture;
+        pipes[5].material.needsUpdate = true;
+        // TEXTURE FOR LAKE PIPE VERTICAL
+        lakePipeTextureV.offset.set(0, offsety);
+        pipes[6].material.map = lakePipeTextureV;
+        pipes[6].material.needsUpdate = true;
+
+        // MOVES THE PIPE TEXTURES WHEN THE WATER NEEDS TO BE SENT TO WASTE.
+        if (waterQuality === false) {
+            offsetX = offsetx;
+            offsetY = offsety;
+            // Pipe going from the filter to the valve. (WASTE WATER).
+            wasteWaterPipeTexture.offset.set(-offsetx, 0); // Horizontal right
+            pipes[0].material.map = wasteWaterPipeTexture;
+            pipes[0].material.needsUpdate = true;
+            // Pipe going down from the transmission box. (WASTE).
+            wasteWaterTexture.offset.set(0, offsety); // Vertical Down
+            pipes[2].material.map = wasteWaterTexture;
+            pipes[2].material.needsUpdate = true;
+
+            filters[1].material.map = valveTextureBad;
+            filters[1].material.needsUpdate = true;
+
+            // MOVES THE PIPE TEXTURES WHEN THE WATER IS CLEAN.
+        } else if (waterQuality === true) {
+            offsetX = offsetx;
+            offsetY = offsety;
+            // Pipe going from the filter to the valve. (CLEAN WATER).
+            waterPipeTexture.offset.set(-offsetx, 0); // Horizontal right
+            pipes[0].material.map = waterPipeTexture;
+            pipes[0].material.needsUpdate = true;
+            // Pipe going up from the transmission box to the tank. (CLEAN).
+            cleanWaterTexture.offset.set(0, -offsety); // Vertical Up
+            pipes[1].material.map = cleanWaterTexture;
+            pipes[1].material.needsUpdate = true;
+            // Pipe going horizontal from the clean water. (CLEAN).
+            cleanWaterHTexture.offset.set(-offsetx, 0); // Horizontal right
+            pipes[3].material.map = cleanWaterHTexture;
+            pipes[3].material.needsUpdate = true;
+            // Pipe going down into the holding tank. (CLEAN).
+            cleanWaterTextureD.offset.set(0, offsety); // Vertical Down
+            pipes[4].material.map = cleanWaterTextureD;
+            pipes[4].material.needsUpdate = true;
+
+            filters[1].material.map = valveTextureGood;
+            filters[1].material.needsUpdate = true;
+        }
+    }
+
+    /*
+        * animate:
+        *
+        * Renders the functions that need to be changed every second of run time.
+        * PURPOSE: Allows for animations and physics simulation within the game.
+    */
+    animate = function () {
+        requestAnimationFrame(animate); // Allows rotation and Textures to be use
+        renderer.render(scene, camera); // what needs to be rendered
+        updateText();
+        textureAnimation();
+        checkQuality();
+    };
+    animate();
+
+    // UPDATES THE SCREEN SIZE TO FIT VARIATIONS IN SCREEN RESOLUTION
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+</script>
+</body>
+</html>

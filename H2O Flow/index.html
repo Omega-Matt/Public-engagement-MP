@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>H2O FLOW</title>
+
+    <link rel="stylesheet" href="styleSheets/homeStyles.css">
+    <script type="text/javascript" src="gameScripts/points.js"></script>
+
+</head>
+<body>
+
+<!-- Creates the header for title page -->
+<div id="headerBackground">
+    <h1> H<span class='smaller'>2</span>O FLOW</h1>
+</div>
+<!-- Creates the comment for mobile play as a heading for the header -->
+<h2> For mobile, play the game in landscape.</h2>
+
+<!-- Creates the game objectives header and related paragraphs of information -->
+<h3>Game Objectives:</h3>
+<div id="p1">
+    The aim of the game is to make, as much clean water as you can within 2 minutes.
+</div>
+
+<div id="p2">
+    Water is sent to the tank when the water quality is good. (This gives you points).
+    Water is sent to waste if the water quality is bad. (This doesn't give points).
+</div>
+
+<div id="p3">
+    You can change the water quality by using the arrows to Add or Remove
+    Flocculant from the water.
+</div>
+
+<div id="p4">
+    If your tank runs out of water, the game is over!
+    (Keep your filter clean, so your flow of water is high.)
+</div>
+
+<!-- Button for the game -->
+<div id="startGame">
+    <a href="filterRoom.html">
+        <button id="start"> Start Game</button>
+    </a>
+</div>
+
+<!-- Button for the tutorial page -->
+<div id="tutorialPage">
+    <a href="tutorial.html">
+        <button id="tutorialButton">Tutorial</button>
+    </a>
+</div>
+
+<!-- Creates the div, for the high score table on the home screen -->
+<div id="highScores"></div>
+
+<script type="text/javascript">
+
+    /*
+    * Gets the data that will replace the "txt" variable.
+    * In this case the variable passed is the cookies that have been stored within a different file.
+    * This allows for the data to formatted into a score table using HTML div tags.
+    */
+    appendScores(showHighScores());
+
+    /*
+     * Gets: The name of the "highScores" div, so that data can be passed into the input field
+     * Sets: A blank variable "txt" which can be assigned to a different variable, by calling this function.
+     */
+    function appendScores(txt) {
+        document.getElementById('highScores').innerHTML = txt
+    }
+
+</script>
+
+</body>
+</html>

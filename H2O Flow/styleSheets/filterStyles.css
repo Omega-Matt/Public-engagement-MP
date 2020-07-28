@@ -1,0 +1,419 @@
+/* Prevents scrolling and makes the scene the full width of the screen */
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    padding: 0;
+}
+
+/* Positions the "sunny" weather graphic */
+#weatherSun {
+    position: absolute;
+    left: 1%;
+    top: 1%;
+    visibility: hidden;
+}
+
+/* Positions the "raining" weather graphic */
+#weatherRain {
+    position: absolute;
+    left: 1%;
+    top: 1%;
+    visibility: hidden;
+}
+
+/* This is the style for the text displaying the water flow */
+#flow {
+    position: absolute;
+    padding: 5px;
+    top: 3%;
+    left: 32%;
+    font-size: 1.5vw;
+    font-family: OCR A Std, monospace, serif;
+    background-color: rgb(248, 255, 247);
+    color: #000000;
+}
+
+/* This is the style for the text displaying the tank capacity */
+#capacity {
+    position: absolute;
+    padding: 5px;
+    top: 3%;
+    left: 52%;
+    font-size: 1.5vw;
+    font-family: OCR A Std, monospace, serif;
+    background-color: #f8fff7;
+    color: #000000;
+}
+
+/* This is the style for the text displaying the points */
+#points {
+    position: absolute;
+    padding: 5px;
+    top: 3%;
+    left: 76%;
+    font-size: 1.5vw;
+    font-family: OCR A Std, monospace, serif;
+    background-color: #f8fff7;
+    color: #000000;
+}
+
+/* This is the style for the text displaying the timer */
+#Timer {
+    position: absolute;
+    padding: 5px;
+    top: 3%;
+    left: 16%;
+    font-size: 1.5vw;
+    font-family: OCR A Std, monospace, serif;
+    background-color: #f8fff7;
+    color: black;
+}
+
+/* This is the style for the text displaying the filter load */
+#filterLoad {
+    position: absolute;
+    top: 41%;
+    left: 21.2%;
+    font-size: 1vw;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+}
+
+/* This is the style for the "run to clean" in the valve modal div */
+#cleanFilter {
+    top: 43.3%;
+    left: 22%;
+    height: 1.5vw;
+    width: 5vw;
+    background-color: rgb(0, 0, 0);
+    color: #ffffff;
+    font-size: 1vw;
+    border-radius: 5px;
+}
+
+/* Button hover colours */
+#cleanFilter:hover {
+    background-color: rgb(95, 95, 95);
+}
+
+/* This is the style for the text displaying the points in the filter scene when water is sent */
+#filterCleaned {
+    position: absolute;
+    padding: 5px;
+    top: 8.5%;
+    left: 63.5%;
+    font-size: 1.5vw;
+    font-family: OCR A Std, monospace, serif;
+    background-color: rgba(248, 255, 247, 0);
+    color: #ce0700;
+    font-weight: bold;
+}
+
+/* This is the style for the text displaying the flocculant level */
+#flocculantLevel {
+    position: absolute;
+    top: 41%;
+    left: 2%;
+    font-size: 1.5vw;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+/* This is the style for the "adding floc button" */
+#addFloc {
+    position: absolute;
+    top: 36.5%;
+    left: 15%;
+    width: 0;
+    height: 0;
+    border-left: 1vw solid transparent;
+    border-right: 1vw solid transparent;
+    border-bottom: 2vw solid #11ae1c;
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 0px;
+}
+
+/* This is the style for the "adding floc button" hover colors*/
+#addFloc:hover {
+    border-bottom: 2vw solid #4dc75f;
+}
+
+/* This is the style for the "remove floc button" in the filter modal div */
+#removeFloc {
+    position: absolute;
+    top: 42%;
+    left: 15%;
+    width: 0;
+    height: 0;
+    border-left: 1vw solid transparent;
+    border-right: 1vw solid transparent;
+    border-bottom: 2vw solid #bb140e;
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 0px;
+    transform: rotate(180deg);
+}
+
+/* This is the style for the "remove floc button" hover colors*/
+#removeFloc:hover {
+    border-bottom: 2vw solid #c5413a;
+}
+
+/* This is the style for the text displaying the water turbidity */
+#filterTurbidity {
+    position: absolute;
+    top: 16.5%;
+    left: 2%;
+    font-size: 1.5vw;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+/* Styles for the in-game tips. Located in the bottom left of the screen */
+#tips {
+    position: absolute;
+    top: 71%;
+    left: 0.1%;
+    font-size: 1vw;
+    font-family: Arial, sans-serif;
+    color: #000000;
+    font-weight: bold;
+    background-color: rgba(178, 178, 178, 0.61);
+}
+
+/* This is the style for the text displaying the water status */
+#waterQuality {
+    position: absolute;
+    top: 50.5%;
+    left: 29%;
+    font-size: 2vw;
+    font-family: Arial, sans-serif;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* This is the style for the text displaying the holding tank location */
+#tank {
+    position: absolute;
+    top: 46.5%;
+    left: 72%;
+    font-size: 2.5vw;
+    font-family: Arial, sans-serif;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* This is the style for the "buyWaterButton" */
+#buyWaterButton {
+    position: absolute;
+    top: 35%;
+    left: 79%;
+    height: 2vw;
+    width: 12vw;
+    background-color: rgb(211, 43, 19);
+    color: black;
+    font-size: 1.5vw;
+    font-weight: bold;
+    border-radius: 10px;
+}
+
+/* This is the style for the "buyWaterButton" hover colors */
+#buyWaterButton:hover {
+    background-color: rgb(237, 89, 65);
+}
+
+/* This is the style for the "lake button" on the filter room scene */
+#exitGame {
+    position: absolute;
+    top: 3%;
+    left: 88%;
+    height: 2vw;
+    width: 8vw;
+    background-color: rgb(251, 0, 5); /* Black w/ opacity */
+    font-size: 1.5vw;
+    font-weight: bold;
+}
+
+/* Button hover colours */
+#exitGame:hover {
+    background-color: #ff3e2a;
+}
+
+/* Styles for the gameOver header in the gameOver Modal */
+#gameOverHeader {
+    position: absolute;
+    top: 10%;
+    left: 25%;
+    text-align: center;
+    font-size: 2vw;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+}
+
+/* Modal Paragraph styles */
+p {
+    margin-top: 5%;
+    font-size: 1vw;
+    font-family: Arial, serif;
+    color: #000000;
+}
+
+/* This is the style for the button that resets the game variables */
+#tryAgain {
+    position: absolute;
+    top: 65%;
+    left: 53%;
+    height: 2vw;
+    width: 8vw;
+    background-color: rgb(255, 255, 255);
+    color: black;
+    font-size: 1vw;
+    font-weight: bold;
+}
+
+/* This is the style for the "tryAgain" button *hover* color */
+#tryAgain:hover {
+    background-color: rgb(164, 172, 165);
+}
+
+/* This is the style for the text displaying the header of the end game pop-up */
+#endGameHeader {
+    position: absolute;
+    top: 10%;
+    left: 25%;
+    text-align: center;
+    font-size: 2vw;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+}
+
+/* This is the style for the text displaying the players score on the end game pop-up*/
+#playerScore {
+    position: absolute;
+    padding: 5px;
+    top: 40%;
+    left: 27%;
+    text-align: center;
+    font-size: 1.2vw;
+    font-family: OCR A Std, monospace, serif;
+    background-color: rgba(248, 255, 247, 0.61);
+    color: black;
+}
+
+/* This is the style for the button that allows for a name to be entered */
+#enterName {
+    position: absolute;
+    top: 65%;
+    left: 2%;
+    height: 2vw;
+    width: 8vw;
+    background-color: rgb(255, 255, 255);
+    color: black;
+    font-size: 1vw;
+    font-weight: bold;
+}
+
+/* This is the style for the "enterName" button *hover* color */
+#enterName:hover {
+    background-color: rgb(164, 172, 165);
+}
+
+/* This is the style for the button that resets the game variables */
+#newGame {
+    position: absolute;
+    top: 65%;
+    left: 53%;
+    height: 2vw;
+    width: 8vw;
+    background-color: rgb(255, 255, 255);
+    color: black;
+    font-size: 1vw;
+    font-weight: bold;
+}
+
+/* This is the style for the "newPlayer" button *hover* color */
+#newGame:hover {
+    background-color: rgb(164, 172, 165);
+}
+
+/* This is the style for the button that resets the game variables */
+#exit {
+    position: absolute;
+    top: 1%;
+    left: 80%;
+    height: 2vw;
+    width: 3vw;
+    background-color: rgb(245, 247, 251);
+    color: black;
+    font-size: 1vw;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* This is the style for the "newPlayer" button *hover* color */
+#exit:hover {
+    background-color: rgb(210, 214, 219);
+}
+
+/* The Modal (background) */
+.modal {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 90%;
+    overflow: hidden; /* Enable scroll if needed */
+    background-color: rgb(225, 255, 252); /* Fallback color */
+    background-color: rgba(58, 58, 58, 0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #99cee8;
+    position: absolute;
+    margin: auto;
+    padding: 15px;
+    top: 15%;
+    left: 40%;
+    border: 2px solid #030058;
+    width: 20%;
+    height: 25%;
+}
+
+/* The Close Button */
+.close {
+    color: #000000;
+    float: right;
+    font-size: 1vw;
+    bottom: 10%;
+    font-weight: bold;
+}
+
+/* This changes the color of the "x" when hovered over */
+.close:hover,
+.close:focus {
+    color: #ffffff;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* This is the style for the general "button" div */
+button {
+    padding: 1px;
+    margin: 10px;
+    height: 3vw;
+    width: 10vw;
+    color: black;
+    background-color: rgb(86, 160, 251); /* Black w/ opacity */
+    font-size: 2vw;
+    font-family: Arial, sans-serif;
+    border-color: rgba(3, 0, 88, 0);
+    border-radius: 15px;
+}
+
+button:hover {
+    background-color: #99cee8;
+}

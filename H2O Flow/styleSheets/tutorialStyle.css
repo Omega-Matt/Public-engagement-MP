@@ -1,0 +1,430 @@
+/* Prevents scrolling and makes the scene the full width of the screen */
+html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    padding: 0;
+}
+/* Positions the "sunny" weather graphic */
+#weatherSun {
+    position: absolute;
+    left: 2%;
+    top: 1%;
+    visibility: hidden;
+}
+/* Positions the "raining" weather graphic */
+#weatherRain {
+    position: absolute;
+    left: 2%;
+    top: 1%;
+    visibility: hidden;
+}
+
+/* This is the style for the text displaying the water flow */
+#flow {
+    position: absolute;
+    padding: 5px;
+    top: 3%;
+    left: 42%;
+    font-size: 1.5vw;
+    font-family: OCR A Std, monospace, serif;
+    background-color: rgb(248, 255, 247);
+    color: #000000;
+}
+
+/* This is the style for the text displaying the tank capacity */
+#capacity {
+    position: absolute;
+    padding: 5px;
+    top: 3%;
+    left: 62%;
+    font-size: 1.5vw;
+    font-family: OCR A Std, monospace, serif;
+    background-color: #f8fff7;
+    color: #000000;
+}
+
+/* This is the style for the text displaying the points */
+#points {
+    position: absolute;
+    padding: 5px;
+    top: 3%;
+    left: 86%;
+    font-size: 1.5vw;
+    font-family: OCR A Std, monospace, serif;
+    background-color: #f8fff7;
+    color: #000000;
+}
+
+/* This is the style for the text displaying the timer */
+#Timer {
+    position: absolute;
+    padding: 5px;
+    top: 3%;
+    left: 26%;
+    font-size: 1.5vw;
+    font-family: OCR A Std, monospace, serif;
+    background-color: #f8fff7;
+    color: black;
+}
+
+/* This is the style for the text displaying the filter load */
+#filterLoad {
+    position: absolute;
+    top: 41%;
+    left: 21.2%;
+    font-size: 1vw;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+}
+
+/* This is the style for the "run to clean" in the valve modal div */
+#cleanFilter {
+    top: 43.3%;
+    left: 22%;
+    height: 1.5vw;
+    width: 5vw;
+    background-color: rgb(0, 0, 0);
+    color: #ffffff;
+    font-size: 1vw;
+    border-radius: 5px;
+}
+
+/* This is the style for the "cleanFilter button" hover colors*/
+#cleanFilter:hover {
+    background-color: rgb(95, 95, 95);
+}
+
+/* This is the style for the text displaying the points in the filter scene when water is sent */
+#filterCleaned {
+    position: absolute;
+    padding: 5px;
+    top: 8.5%;
+    left: 63.5%;
+    font-size: 1.5vw;
+    font-family: OCR A Std, monospace, serif;
+    background-color: rgba(248, 255, 247, 0.16);
+    color: #ce0700;
+    font-weight: bold;
+}
+
+/* This is the style for the text displaying the flocculant level */
+#flocculantLevel {
+    position: absolute;
+    top: 41%;
+    left: 2%;
+    font-size: 1.5vw;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+/* This is the style for the "adding floc button" */
+#addFloc {
+    position: absolute;
+    top: 36.5%;
+    left: 15%;
+    width: 0;
+    height: 0;
+    border-left: 1vw solid transparent;
+    border-right: 1vw solid transparent;
+    border-bottom: 2vw solid #11ae1c;
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 0px;
+}
+
+/* This is the style for the "adding floc button" hover colors*/
+#addFloc:hover {
+    border-bottom: 2vw solid #4dc75f;
+}
+
+/* This is the style for the "remove floc button" in the filter modal div */
+#removeFloc {
+    position: absolute;
+    top: 42%;
+    left: 15%;
+    width: 0;
+    height: 0;
+    border-left: 1vw solid transparent;
+    border-right: 1vw solid transparent;
+    border-bottom: 2vw solid #bb140e;
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 0px;
+    transform: rotate(180deg);
+}
+
+/* This is the style for the "remove floc button" hover colors*/
+#removeFloc:hover {
+    border-bottom: 2vw solid #c5413a;
+}
+
+/* This is the style for the "buyWaterButton" */
+#buyWaterButton {
+    position: absolute;
+    top: 35%;
+    left: 79%;
+    height: 2vw;
+    width: 12vw;
+    background-color: rgb(211, 43, 19);
+    color: black;
+    font-size: 1.5vw;
+    font-weight: bold;
+    border-radius: 10px;
+}
+
+/* This is the style for the "buyWaterButton" hover colors */
+#buyWaterButton:hover {
+    background-color: rgb(237, 89, 65);
+}
+
+/* This is the style for the text displaying the water turbidity */
+#filterTurbidity {
+    position: absolute;
+    top: 16.5%;
+    left: 2%;
+    font-size: 1.5vw;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+/* This is the style for the "filter room button" on the lake scene */
+#filterRoomButton {
+    position: absolute;
+    top: 62%;
+    left: 1%;
+    border-radius: 25px;
+}
+
+/* This is the style for the "generalInfo" button on the bottom left of the screen */
+#generalInfo {
+    position: absolute;
+    top: 69%;
+    left: 2%;
+    border-radius: 25px;
+}
+
+/* This is the style for the "homePage" button on the bottom left of the screen */
+#homePage {
+    position: absolute;
+    top: 76%;
+    left: 3%;
+    border-radius: 25px;
+}
+
+/* Styles for the gameValueInfoButton. This is the info button next to the "timer" */
+#gameValuesInfoButton {
+    position: absolute;
+    top: 0.5%;
+    left: 22%;
+    height: 2vw;
+    width: 2vw;
+    background-color: white;
+    font-family: Georgia, serif;
+    font-weight: bold;
+    font-size: 1.5vw;
+    border-radius: 50%;
+}
+
+/* Button hover colours */
+#gameValuesInfoButton:hover {
+    background-color: #b7b7b7;
+}
+
+/* Styles for the turbInfoButton. This is the info button next to the "Water Turbidity" */
+#turbInfoButton {
+    position: absolute;
+    top: 13%;
+    left: 14%;
+    height: 2vw;
+    width: 2vw;
+    background-color: white;
+    font-family: Georgia, serif;
+    font-weight: bold;
+    font-size: 1.5vw;
+    border-radius: 50%;
+}
+
+/* Button hover colours */
+#turbInfoButton:hover {
+    background-color: #b7b7b7;
+}
+
+/* Styles for the flocculantInfoButton. This button is located next to the "Flocculant Level" */
+#flocculantInfoButton {
+    position: absolute;
+    top: 31%;
+    left: 0.1%;
+    height: 3vw;
+    width: 3vw;
+    background-color: white;
+    font-family: Georgia, serif;
+    font-weight: bold;
+    border-radius: 50%;
+}
+
+/* Button hover colours */
+#flocculantInfoButton:hover {
+    background-color: #b7b7b7;
+}
+
+/* Styles for the filterInfoButton. This button is located next to the "Green Filter" */
+#filterInfoButton {
+    position: absolute;
+    top: 31%;
+    left: 28%;
+    height: 2vw;
+    width: 2vw;
+    background-color: white;
+    font-family: Georgia, serif;
+    font-weight: bold;
+    font-size: 1.5vw;
+    border-radius: 50%;
+}
+
+/* Button hover colours */
+#filterInfoButton:hover {
+    background-color: #b7b7b7;
+}
+
+/* Styles for the valveInfoButton. This button is located next to the "valve showing water direction" */
+#valveInfoButton {
+    position: absolute;
+    top: 51%;
+    left: 55%;
+    height: 2vw;
+    width: 2vw;
+    background-color: white;
+    font-family: Georgia, serif;
+    font-weight: bold;
+    font-size: 1.5vw;
+    border-radius: 50%;
+}
+
+/* Button hover colours */
+#valveInfoButton:hover {
+    background-color: #b7b7b7;
+}
+
+/* This is the style for the text displaying the water status */
+#waterQuality {
+    position: absolute;
+    top: 50.5%;
+    left: 30%;
+    font-size: 2vw;
+    font-family: Arial, sans-serif;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* This is the style for the text displaying the holding tank location */
+#tank {
+    position: absolute;
+    top: 48.5%;
+    left: 75%;
+    font-size: 2.5vw;
+    font-family: Arial, sans-serif;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* Header for the title of the info Modals */
+h1 {
+    font-size: 2.5vw;
+    position: absolute;
+    top: 0.1%;
+    text-align: center;
+    font-family: Arial, serif;
+    color: #000000;
+    margin-bottom: 80%;
+}
+
+/* paragraph styles for the modals */
+p {
+    margin-top: 4%;
+    font-size: 1.1vw;
+    font-family: Arial, serif;
+    color: #000000;
+}
+
+/* Class that changes text to "red" */
+.red {
+    color: red;
+}
+
+/* Class that changes text to "green" */
+.green {
+    color: #01a000;
+}
+
+/* Class that changes text to "blue" */
+.blue {
+    color: #030058;
+}
+
+/* Class that changes text to "Bold" */
+.bold {
+    font-weight: bold;
+    color: #030058;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 90%;
+    overflow: hidden; /* Enable scroll if needed */
+    background-color: rgb(225, 255, 252); /* Fallback color */
+    background-color: rgba(141, 207, 251, 0.15); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: rgb(236, 240, 245);
+    position: absolute;
+    margin: auto;
+    padding: 15px;
+    top: 10%;
+    left: 22%;
+    border: 3px solid #000000;
+    width: 60%;
+    height: 70%;
+}
+
+/* The Close Button */
+.close {
+    color: #000000;
+    float: right;
+    font-size: 2vw;
+    bottom: 10%;
+    font-weight: bold;
+}
+
+/* This changes the color of the "x" when hovered over */
+.close:hover,
+.close:focus {
+    color: #636363;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* This is the style for the general "button" div */
+button {
+    padding: 1px;
+    margin: 10px;
+    height: 60%;
+    width: 15vw;
+    color: black;
+    background-color: rgb(86, 160, 251); /* Black w/ opacity */
+    font-size: 2vw;
+    font-family: Arial, sans-serif;
+    border-color: rgba(3, 0, 88, 0);
+    border-radius: 15px;
+}
+
+button:hover {
+    background-color: #99cee8;
+}
