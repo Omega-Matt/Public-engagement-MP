@@ -1,2 +1,2 @@
-# Public-engagement-MP
-This repository is for my MP work to keep version control.
+# University projects
+This repository holds versions of my university projects for viewing.
